@@ -1,0 +1,44 @@
+/* eventflow-marketing/src/styles/global.css */
+@import "tailwindcss";
+
+@import url('https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap');
+
+@theme {
+  --font-heebo: 'Heebo', sans-serif;
+  --color-brand-primary: #1a2744;
+  --color-brand-gold: #c8a97e;
+  --color-brand-cream: #faf8f5;
+  --color-brand-dark: #0f1a2e;
+}
+
+.gradient-gold {
+  background: linear-gradient(135deg, #c8a97e 0%, #e8d5b5 50%, #c8a97e 100%);
+}
+
+.gradient-hero {
+  background: linear-gradient(180deg, #0f1a2e 0%, #1a2744 50%, #243352 100%);
+}
+
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes fade-in-up {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.6s ease-out forwards;
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.6s ease-out forwards;
+}
