@@ -8,11 +8,13 @@ import EmptyState from '@/components/pseo/EmptyState.astro';
 import FAQSection from '@/components/pseo/FAQSection.astro';
 import InternalLinks from '@/components/pseo/InternalLinks.astro';
 import CTABlock from '@/components/layout/CTABlock.astro';
+import AnswerBlock from '@/components/seo/AnswerBlock.astro';
+import FreshnessSignal from '@/components/seo/FreshnessSignal.astro';
 import { services, getServiceBySlug, RESERVED_PATHS } from '@/data/services';
 import { cities, getCityBySlug, getNearbyCities } from '@/data/cities';
 import { genericFaqs, interpolateFaqs } from '@/data/faqs';
 import { getAllPublicSuppliers, filterByService, filterByCity, sortSuppliers } from '@/lib/suppliers';
-import { organizationSchema, breadcrumbSchema } from '@/lib/seo';
+import { organizationSchema, breadcrumbSchema, serviceSchema } from '@/lib/seo';
 
 export const getStaticPaths = (async () => {
   // Batch fetch ALL suppliers once
@@ -52,9 +54,12 @@ const breadcrumbItems = [
   { name: city.nameHe, url: pageUrl },
 ];
 
+const todayDate = new Date().toISOString().split('T')[0];
+
 const schemas = [
   organizationSchema(),
   breadcrumbSchema(breadcrumbItems),
+  serviceSchema(service.nameHe, service.descriptionHe, city.nameHe),
 ];
 ---
 
@@ -80,6 +85,12 @@ const schemas = [
   </section>
 
   <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <FreshnessSignal updatedDate={todayDate} />
+    <AnswerBlock
+      question={`מחפשים ${service.nameHe} ב${city.nameHe}?`}
+      answer={`ב-EventFlow תמצאו ${service.pluralHe} מומלצים ב${city.nameHe}, עם ביקורות אמיתיות והצעות מחיר. השוו בין ספקים ובחרו את המתאים לאירוע שלכם.`}
+    />
+
     {suppliers.length > 0 ? (
       <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
         {suppliers.map((supplier) => (
