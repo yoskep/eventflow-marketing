@@ -1,0 +1,70 @@
+---
+import type { GetStaticPaths } from 'astro';
+import PageLayout from '@/layouts/PageLayout.astro';
+import SEOHead from '@/components/seo/SEOHead.astro';
+import Breadcrumbs from '@/components/seo/Breadcrumbs.astro';
+import BlogPostCard from '@/components/blog/BlogPostCard.astro';
+import CategoryPills from '@/components/blog/CategoryPills.astro';
+import { getAllPublishedPosts } from '@/lib/blog';
+import { categories } from '@/data/categories';
+import { organizationSchema } from '@/lib/seo';
+
+export const getStaticPaths = (async () => {
+  const posts = await getAllPublishedPosts();
+  return categories.filter((c) => c.slug !== 'general').map((cat) => ({
+    params: { category: cat.slug },
+    props: { category: cat, posts: posts.filter((p) => p.category === cat.slug) },
+  }));
+}) satisfies GetStaticPaths;
+
+const { category, posts } = Astro.props;
+const siteUrl = import.meta.env.SITE_URL || 'https://eventflow.co.il';
+---
+
+<PageLayout>
+  <SEOHead
+    slot="head"
+    title={`${category.nameHe} | בלוג EventFlow`}
+    description={category.description}
+    canonical={`${siteUrl}/blog/category/${category.slug}`}
+    schemas={[organizationSchema()]}
+  />
+
+  <!-- Gradient hero header -->
+  <section class="bg-gradient-to-br from-[#1a2744] via-[#1e3a5f] to-[#0f1e35] py-16 px-4 text-white" dir="rtl">
+    <div class="max-w-5xl mx-auto">
+      <Breadcrumbs items={[
+        { name: 'בלוג', url: `${siteUrl}/blog` },
+        { name: category.nameHe, url: `${siteUrl}/blog/category/${category.slug}` },
+      ]} />
+      <h1 class="text-4xl md:text-5xl font-bold mb-4">{category.nameHe}</h1>
+      <p class="text-lg text-gray-300 max-w-2xl">{category.description}</p>
+    </div>
+  </section>
+
+  <!-- Category pills with active state -->
+  <div class="max-w-5xl mx-auto px-4 py-8" dir="rtl">
+    <CategoryPills activeCategory={category.slug} />
+  </div>
+
+  <!-- Posts grid -->
+  <div class="max-w-5xl mx-auto px-4 pb-16" dir="rtl">
+    {posts.length === 0 ? (
+      <p class="text-center text-gray-500 py-16 text-lg">אין מאמרים עדיין. חזרו בקרוב!</p>
+    ) : (
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {posts.map((post) => (
+          <BlogPostCard
+            slug={post.slug}
+            title={post.title}
+            excerpt={post.excerpt}
+            coverImageUrl={post.cover_image_url}
+            readingTime={post.reading_time}
+            publishedAt={post.published_at}
+            category={post.category}
+          />
+        ))}
+      </div>
+    )}
+  </div>
+</PageLayout>
