@@ -1,0 +1,156 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+import SEOHead from '@/components/seo/SEOHead.astro';
+import Breadcrumbs from '@/components/seo/Breadcrumbs.astro';
+import CTABlock from '@/components/layout/CTABlock.astro';
+import { organizationSchema, softwareAppSchema } from '@/lib/seo';
+
+const appUrl = import.meta.env.APP_URL || 'https://app.eventflow.co.il';
+
+const offers = [
+  { name: 'Starter', price: '0', currency: 'ILS' },
+  { name: 'Pro', price: '299', currency: 'ILS' },
+  { name: 'Pro Plus', price: '499', currency: 'ILS' },
+  { name: 'Agency', price: '1490', currency: 'ILS' },
+];
+
+const plans = [
+  {
+    name: 'Starter',
+    description: 'להתחלה מהירה',
+    price: 'חינם',
+    priceNote: null,
+    features: ['עד 10 לידים', 'עד 5 הצעות מחיר', 'גלריה בסיסית', 'דף עסקי ציבורי'],
+    cta: 'התחל בחינם',
+    href: `${appUrl}/signup`,
+    popular: false,
+  },
+  {
+    name: 'Pro',
+    description: 'לספק אירועים פעיל',
+    price: '₪299',
+    priceNote: '/חודש',
+    features: ['לידים ללא הגבלה', 'הצעות מחיר ללא הגבלה', 'חוזים דיגיטליים', 'ניהול תשלומים', 'גלריות מתקדמות', 'אוטומציות', 'אנליטיקס'],
+    cta: 'התחל תקופת ניסיון',
+    href: `${appUrl}/signup?plan=pro`,
+    popular: true,
+  },
+  {
+    name: 'Pro Plus',
+    description: 'לעסק צומח',
+    price: '₪499',
+    priceNote: '/חודש',
+    features: ['כל מה שב-Pro', 'טיוטות AI', 'סנכרון Google Calendar', 'דוחות מתקדמים', 'תמיכה בעדיפות'],
+    cta: 'התחל תקופת ניסיון',
+    href: `${appUrl}/signup?plan=pro-plus`,
+    popular: false,
+  },
+  {
+    name: 'Agency',
+    description: 'לחברות ומפיקי אירועים',
+    price: '₪1,490',
+    priceNote: '/חודש',
+    features: ['כל מה שב-Pro Plus', 'ריבוי משתמשים', 'ניהול צוות', 'API גישה', 'מנהל חשבון ייעודי'],
+    cta: 'צור קשר',
+    href: `${appUrl}/signup?plan=agency`,
+    popular: false,
+  },
+];
+---
+
+<PageLayout>
+  <SEOHead
+    slot="head"
+    title="מחירים — EventFlow"
+    description='מחירי EventFlow — מערכת CRM לספקי אירועים. תוכנית חינמית להתחלה, תוכניות Pro למקצוענים. התחל בחינם היום.'
+    schemas={[organizationSchema(), softwareAppSchema(offers)]}
+  />
+
+  <!-- Header -->
+  <section class="gradient-hero py-16 sm:py-20">
+    <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Breadcrumbs items={[{ name: 'מחירים', url: '/pricing' }]} />
+      <h1 class="text-4xl sm:text-5xl font-bold text-white mb-4">מחירים</h1>
+      <p class="text-lg sm:text-xl text-gray-300 max-w-2xl">
+        תוכנית לכל שלב בצמיחת העסק שלך — מהתחלה ועד סוכנות מלאה
+      </p>
+    </div>
+  </section>
+
+  <!-- Pricing Grid -->
+  <section class="py-16 sm:py-20 bg-gray-50" dir="rtl">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 items-start">
+        {plans.map((plan) => (
+          <div class="relative flex flex-col">
+            {plan.popular && (
+              <div class="text-center mb-2">
+                <span class="inline-block gradient-gold text-brand-primary text-xs font-bold px-3 py-1 rounded-full">
+                  הכי פופולרי
+                </span>
+              </div>
+            )}
+            <div class={`flex flex-col flex-1 rounded-2xl p-6 ${
+              plan.popular
+                ? 'bg-brand-primary text-white ring-2 ring-[#c8a97e]'
+                : 'bg-white border border-gray-200'
+            }`}>
+              <div class="mb-6">
+                <h2 class={`text-xl font-bold mb-1 ${plan.popular ? 'text-white' : 'text-brand-primary'}`}>
+                  {plan.name}
+                </h2>
+                <p class={`text-sm mb-4 ${plan.popular ? 'text-gray-300' : 'text-gray-500'}`}>
+                  {plan.description}
+                </p>
+                <div class="flex items-baseline gap-1">
+                  <span class={`text-3xl font-extrabold ${plan.popular ? 'text-white' : 'text-brand-primary'}`}>
+                    {plan.price}
+                  </span>
+                  {plan.priceNote && (
+                    <span class={`text-sm ${plan.popular ? 'text-gray-300' : 'text-gray-500'}`}>
+                      {plan.priceNote}
+                    </span>
+                  )}
+                </div>
+              </div>
+
+              <ul class="flex-1 space-y-3 mb-8">
+                {plan.features.map((feature) => (
+                  <li class="flex items-start gap-2">
+                    <svg class="w-5 h-5 text-green-400 flex-shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                      <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
+                    <span class={`text-sm ${plan.popular ? 'text-gray-200' : 'text-gray-700'}`}>
+                      {feature}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+
+              <a
+                href={plan.href}
+                class={`block text-center py-3 px-4 rounded-xl font-bold text-sm transition-opacity hover:opacity-90 ${
+                  plan.popular
+                    ? 'gradient-gold text-brand-primary'
+                    : 'bg-brand-primary text-white'
+                }`}
+              >
+                {plan.cta}
+              </a>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      <p class="text-center text-sm text-gray-400 mt-8">* לא כולל מע"מ</p>
+    </div>
+  </section>
+
+  <!-- Bottom CTA -->
+  <CTABlock
+    title="יש שאלות?"
+    subtitle="צור קשר ונשמח לעזור לך לבחור את התוכנית המתאימה"
+    buttonText="התחל בחינם"
+    buttonHref="/signup"
+  />
+</PageLayout>
