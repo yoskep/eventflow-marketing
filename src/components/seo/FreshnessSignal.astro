@@ -1,0 +1,8 @@
+---
+interface Props { updatedDate: string; }
+const { updatedDate } = Astro.props;
+const formatted = new Date(updatedDate).toLocaleDateString('he-IL', { year: 'numeric', month: 'long' });
+---
+<p class="text-xs text-gray-400 mb-4">
+  <time datetime={updatedDate}>עודכן: {formatted}</time>
+</p>
