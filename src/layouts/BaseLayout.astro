@@ -1,5 +1,6 @@
 ---
 import '@/styles/global.css';
+import TrackingEvents from '@/components/analytics/TrackingEvents.astro';
 
 interface Props {
   class?: string;
@@ -15,6 +16,17 @@ const gaId = import.meta.env.GA_MEASUREMENT_ID;
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
     <meta name="theme-color" content="#1a2744" />
+
+    <!-- Google Search Console verification — uncomment and add your code -->
+    <!-- <meta name="google-site-verification" content="YOUR_VERIFICATION_CODE" /> -->
+    <!--
+      GSC Setup:
+      1. Go to https://search.google.com/search-console/
+      2. Add property → URL prefix → https://eventflow.co.il
+      3. Choose "HTML tag" verification method
+      4. Copy the content value and paste it above, then uncomment the meta tag
+      5. Deploy and click Verify in GSC
+    -->
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -38,5 +50,6 @@ const gaId = import.meta.env.GA_MEASUREMENT_ID;
   </head>
   <body class={`font-heebo bg-brand-cream text-brand-primary min-h-screen ${className ?? ''}`}>
     <slot />
+    <TrackingEvents />
   </body>
 </html>

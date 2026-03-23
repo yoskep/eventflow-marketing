@@ -1,0 +1,51 @@
+---
+// src/components/analytics/TrackingEvents.astro
+---
+
+<script>
+  function trackEvent(name, params) {
+    if (typeof gtag === 'function') {
+      gtag('event', name, params);
+    }
+  }
+
+  // Track CTA clicks
+  document.querySelectorAll('[data-track-cta]').forEach(el => {
+    el.addEventListener('click', () => {
+      trackEvent('cta_click', {
+        cta_type: el.getAttribute('data-track-cta'),
+        page_type: document.body.getAttribute('data-page-type') || 'unknown',
+        page_path: window.location.pathname,
+      });
+    });
+  });
+
+  // Track scroll depth (25%, 50%, 75%, 100%)
+  let maxScroll = 0;
+  const thresholds = [25, 50, 75, 100];
+  const tracked = new Set();
+  window.addEventListener('scroll', () => {
+    const scrollPercent = Math.round(
+      (window.scrollY / (document.documentElement.scrollHeight - window.innerHeight)) * 100
+    );
+    if (scrollPercent > maxScroll) {
+      maxScroll = scrollPercent;
+      thresholds.forEach(t => {
+        if (maxScroll >= t && !tracked.has(t)) {
+          tracked.add(t);
+          trackEvent('scroll_depth', { depth: t, page_path: window.location.pathname });
+        }
+      });
+    }
+  }, { passive: true });
+
+  // Track social share clicks
+  document.querySelectorAll('[data-track-share]').forEach(el => {
+    el.addEventListener('click', () => {
+      trackEvent('social_share', {
+        platform: el.getAttribute('data-track-share'),
+        page_path: window.location.pathname,
+      });
+    });
+  });
+</script>
