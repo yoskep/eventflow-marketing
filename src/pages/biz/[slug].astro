@@ -4,9 +4,10 @@ import PageLayout from '@/layouts/PageLayout.astro';
 import SEOHead from '@/components/seo/SEOHead.astro';
 import Breadcrumbs from '@/components/seo/Breadcrumbs.astro';
 import CTABlock from '@/components/layout/CTABlock.astro';
+import FreshnessSignal from '@/components/seo/FreshnessSignal.astro';
 import { getAllPublicSuppliers } from '@/lib/suppliers';
 import { getServiceByDbType } from '@/data/services';
-import { organizationSchema, breadcrumbSchema } from '@/lib/seo';
+import { organizationSchema, breadcrumbSchema, localBusinessSchema } from '@/lib/seo';
 
 export const getStaticPaths = (async () => {
   const suppliers = await getAllPublicSuppliers();
@@ -27,38 +28,12 @@ const breadcrumbItems = [
   { name: supplier.business_name, url: pageUrl },
 ];
 
-const localBusinessSchema = {
-  '@context': 'https://schema.org',
-  '@type': 'LocalBusiness',
-  name: supplier.business_name,
-  description: supplier.description ?? undefined,
-  image: supplier.logo_url ?? undefined,
-  url: pageUrl,
-  telephone: supplier.phone ?? undefined,
-  address: supplier.city
-    ? {
-        '@type': 'PostalAddress',
-        addressLocality: supplier.city,
-        addressCountry: 'IL',
-      }
-    : undefined,
-  ...(supplier.reviewCount > 0
-    ? {
-        aggregateRating: {
-          '@type': 'AggregateRating',
-          ratingValue: supplier.avgRating,
-          reviewCount: supplier.reviewCount,
-          bestRating: 5,
-          worstRating: 1,
-        },
-      }
-    : {}),
-};
+const todayDate = new Date().toISOString().split('T')[0];
 
 const schemas = [
   organizationSchema(),
   breadcrumbSchema(breadcrumbItems),
-  localBusinessSchema,
+  localBusinessSchema(supplier),
 ];
 
 const stars = Math.round(supplier.avgRating);
@@ -106,6 +81,7 @@ const stars = Math.round(supplier.avgRating);
   </section>
 
   <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <FreshnessSignal updatedDate={todayDate} />
     <div class="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
       {supplier.description && (
         <p class="text-gray-700 leading-relaxed">{supplier.description}</p>
