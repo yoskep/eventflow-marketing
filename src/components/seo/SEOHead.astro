@@ -39,7 +39,7 @@ const fullTitle = title.includes('EventFlow') ? title : `${title} | EventFlow`;
 <meta name="description" content={description} />
 <meta name="author" content="EventFlow IL" />
 <link rel="canonical" href={canonicalUrl} />
-{noindex && <meta name="robots" content="noindex, nofollow" />}
+{noindex ? <meta name="robots" content="noindex, nofollow" /> : <meta name="robots" content="index, follow" />}
 
 <meta property="og:title" content={fullTitle} />
 <meta property="og:description" content={description} />

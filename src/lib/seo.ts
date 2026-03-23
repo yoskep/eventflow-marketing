@@ -20,7 +20,7 @@ export function organizationSchema() {
       contactType: 'customer service',
       availableLanguage: ['Hebrew', 'English'],
     },
-    sameAs: [],
+    // sameAs: ['https://facebook.com/eventflow', ...] — add when social profiles exist
   };
 }
 
@@ -32,14 +32,7 @@ export function websiteSchema() {
     url: SITE_URL,
     description: 'מערכת CRM לספקי שירותי אירועים בישראל',
     inLanguage: 'he-IL',
-    potentialAction: {
-      '@type': 'SearchAction',
-      target: {
-        '@type': 'EntryPoint',
-        urlTemplate: `${SITE_URL}/search?q={search_term_string}`,
-      },
-      'query-input': 'required name=search_term_string',
-    },
+    // potentialAction: SearchAction — add when search page exists
   };
 }
 
