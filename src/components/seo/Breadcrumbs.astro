@@ -1,0 +1,36 @@
+---
+import SchemaOrg from './SchemaOrg.astro';
+import { breadcrumbSchema, type BreadcrumbItem } from '@/lib/seo';
+
+interface Props {
+  items: BreadcrumbItem[];
+}
+
+const { items } = Astro.props;
+const siteUrl = import.meta.env.SITE_URL || 'https://eventflow.co.il';
+
+const fullItems: BreadcrumbItem[] = [
+  { name: 'ראשי', url: siteUrl },
+  ...items,
+];
+---
+
+<nav aria-label="Breadcrumb" class="text-sm text-gray-400 mb-4">
+  <ol class="flex flex-wrap gap-1 items-center">
+    {fullItems.map((item, i) => (
+      <li class="flex items-center gap-1">
+        {i > 0 && <span class="mx-1">›</span>}
+        {i === fullItems.length - 1 ? (
+          <span class="text-gray-200">{item.name}</span>
+        ) : (
+          <a href={item.url} class="hover:text-white transition-colors">{item.name}</a>
+        )}
+      </li>
+    ))}
+  </ol>
+</nav>
+
+<SchemaOrg schema={breadcrumbSchema(fullItems.map((item) => ({
+  name: item.name,
+  url: item.url.startsWith('http') ? item.url : new URL(item.url, siteUrl).toString(),
+})))} />
