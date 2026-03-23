@@ -1,0 +1,139 @@
+---
+import type { GetStaticPaths } from 'astro';
+import BlogLayout from '@/layouts/BlogLayout.astro';
+import SEOHead from '@/components/seo/SEOHead.astro';
+import Breadcrumbs from '@/components/seo/Breadcrumbs.astro';
+import TableOfContents from '@/components/blog/TableOfContents.astro';
+import RelatedPosts from '@/components/blog/RelatedPosts.astro';
+import ShareButtons from '@/components/blog/ShareButtons.astro';
+import NewsletterSignup from '@/components/blog/NewsletterSignup';
+import CTABlock from '@/components/layout/CTABlock.astro';
+import { getAllPublishedPosts, getRelatedPosts, extractHeadings, addHeadingIds, formatDateHe } from '@/lib/blog';
+import { sanitize } from '@/lib/sanitize';
+import { organizationSchema, breadcrumbSchema } from '@/lib/seo';
+
+export const getStaticPaths = (async () => {
+  const posts = await getAllPublishedPosts();
+  return Promise.all(posts.map(async (post) => {
+    const related = await getRelatedPosts(post.category, post.slug, 3);
+    return { params: { slug: post.slug }, props: { post, related } };
+  }));
+}) satisfies GetStaticPaths;
+
+const { post, related } = Astro.props;
+const siteUrl = import.meta.env.SITE_URL || 'https://eventflow.co.il';
+const supabaseUrl = import.meta.env.SUPABASE_URL;
+const supabaseKey = import.meta.env.SUPABASE_ANON_KEY;
+
+const sanitizedContent = sanitize(post.content);
+const contentWithIds = addHeadingIds(sanitizedContent);
+const headings = extractHeadings(sanitizedContent);
+const pageUrl = `${siteUrl}/blog/${post.slug}`;
+
+const articleSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'Article',
+  headline: post.meta_title || post.title,
+  description: post.meta_description || post.excerpt || '',
+  image: post.cover_image_url || `${siteUrl}/images/og-default.png`,
+  datePublished: post.published_at,
+  dateModified: post.updated_at,
+  url: pageUrl,
+  publisher: {
+    '@type': 'Organization',
+    name: 'EventFlow',
+    url: siteUrl,
+    logo: { '@type': 'ImageObject', url: `${siteUrl}/icons/icon-512.png` },
+  },
+  mainEntityOfPage: { '@type': 'WebPage', '@id': pageUrl },
+};
+
+const breadcrumbItems = [
+  { name: 'בלוג', url: `${siteUrl}/blog` },
+  { name: post.title, url: pageUrl },
+];
+---
+
+<BlogLayout>
+  <SEOHead
+    slot="head"
+    title={post.meta_title || post.title}
+    description={post.meta_description || post.excerpt || ''}
+    canonical={pageUrl}
+    ogImage={post.cover_image_url || undefined}
+    ogType="article"
+    article={{
+      publishedTime: post.published_at || post.created_at,
+      modifiedTime: post.updated_at,
+      tags: post.tags,
+      section: post.category,
+    }}
+    schemas={[articleSchema, breadcrumbSchema(breadcrumbItems), organizationSchema()]}
+  />
+
+  <!-- Gradient hero header -->
+  <section class="bg-gradient-to-br from-[#1a2744] via-[#1e3a5f] to-[#0f1e35] py-14 px-4 text-white" dir="rtl">
+    <div class="max-w-3xl mx-auto">
+      <Breadcrumbs items={breadcrumbItems} />
+      <h1 class="text-3xl md:text-4xl font-bold mb-4 leading-tight">{post.title}</h1>
+      <div class="flex items-center gap-4 text-gray-300 text-sm">
+        <span>{post.reading_time} דקות קריאה</span>
+        {post.published_at && (
+          <>
+            <span>·</span>
+            <time datetime={post.published_at}>{formatDateHe(post.published_at)}</time>
+          </>
+        )}
+      </div>
+    </div>
+  </section>
+
+  <div class="max-w-3xl mx-auto px-4 py-10" dir="rtl">
+    <!-- Cover image -->
+    {post.cover_image_url && (
+      <img
+        src={post.cover_image_url}
+        alt={post.title}
+        loading="eager"
+        class="w-full rounded-xl mb-8 object-cover max-h-96"
+      />
+    )}
+
+    <!-- Share buttons (top) -->
+    <ShareButtons url={pageUrl} title={post.title} />
+
+    <!-- Table of contents -->
+    {headings.length > 0 && (
+      <div class="my-8">
+        <TableOfContents headings={headings} />
+      </div>
+    )}
+
+    <!-- Article content -->
+    <article>
+      <div
+        class="prose prose-lg max-w-none prose-headings:font-bold prose-headings:text-brand-primary prose-a:text-brand-gold prose-a:underline"
+        set:html={contentWithIds}
+      />
+    </article>
+
+    <!-- Share buttons (bottom) -->
+    <div class="border-t border-gray-200 mt-10 pt-8">
+      <ShareButtons url={pageUrl} title={post.title} />
+    </div>
+
+    <!-- Newsletter -->
+    <div class="mt-12">
+      <NewsletterSignup client:visible supabaseUrl={supabaseUrl} supabaseKey={supabaseKey} />
+    </div>
+
+    <!-- Related posts -->
+    {related.length > 0 && (
+      <div class="mt-12">
+        <RelatedPosts posts={related} />
+      </div>
+    )}
+  </div>
+
+  <CTABlock />
+</BlogLayout>
