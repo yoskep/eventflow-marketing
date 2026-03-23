@@ -81,3 +81,77 @@ export function webPageSchema(name: string, description: string, url: string) {
     inLanguage: 'he-IL',
   };
 }
+
+export function faqPageSchema(faqs: { question: string; answer: string }[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'FAQPage',
+    mainEntity: faqs.map((faq) => ({
+      '@type': 'Question',
+      name: faq.question,
+      acceptedAnswer: { '@type': 'Answer', text: faq.answer },
+    })),
+  };
+}
+
+export function localBusinessSchema(supplier: {
+  business_name: string;
+  description?: string | null;
+  logo_url?: string | null;
+  city?: string | null;
+  phone?: string | null;
+  website_url?: string | null;
+  avgRating?: number;
+  reviewCount?: number;
+}) {
+  const schema: Record<string, unknown> = {
+    '@context': 'https://schema.org',
+    '@type': 'LocalBusiness',
+    name: supplier.business_name,
+    description: supplier.description || undefined,
+    image: supplier.logo_url || undefined,
+    telephone: supplier.phone || undefined,
+    url: supplier.website_url || undefined,
+  };
+  if (supplier.city) {
+    schema.address = {
+      '@type': 'PostalAddress',
+      addressLocality: supplier.city,
+      addressCountry: 'IL',
+    };
+  }
+  if (supplier.avgRating && supplier.reviewCount && supplier.reviewCount > 0) {
+    schema.aggregateRating = {
+      '@type': 'AggregateRating',
+      ratingValue: supplier.avgRating,
+      reviewCount: supplier.reviewCount,
+      bestRating: 5,
+      worstRating: 1,
+    };
+  }
+  return schema;
+}
+
+export function serviceSchema(serviceName: string, description: string, areaServed: string) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'Service',
+    name: serviceName,
+    description,
+    areaServed: { '@type': 'Place', name: areaServed },
+    provider: { '@type': 'Organization', name: 'EventFlow', url: SITE_URL },
+  };
+}
+
+export function itemListSchema(items: { name: string; url: string; position: number }[]) {
+  return {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    itemListElement: items.map((item) => ({
+      '@type': 'ListItem',
+      position: item.position,
+      name: item.name,
+      url: item.url,
+    })),
+  };
+}
