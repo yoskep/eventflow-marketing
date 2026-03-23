@@ -1,0 +1,26 @@
+---
+import type { ServiceType } from '../../data/services';
+
+interface Props {
+  services: ServiceType[];
+  citySlug: string;
+  excludeSlug: string;
+}
+
+const { services, citySlug, excludeSlug } = Astro.props;
+
+const filteredServices = services.filter((s) => s.slug !== excludeSlug);
+---
+
+<ul class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4" role="list">
+  {filteredServices.map((service) => (
+    <li>
+      <a
+        href={`/${service.slug}/${citySlug}`}
+        class="block rounded-lg border border-gray-200 px-3 py-2 text-center text-sm font-medium text-gray-700 transition hover:border-brand-gold hover:text-brand-gold"
+      >
+        {service.nameHe}
+      </a>
+    </li>
+  ))}
+</ul>

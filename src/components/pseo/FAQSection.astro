@@ -1,0 +1,49 @@
+---
+import SchemaOrg from '../seo/SchemaOrg.astro';
+
+interface FAQItem {
+  question: string;
+  answer: string;
+}
+
+interface Props {
+  faqs: FAQItem[];
+}
+
+const { faqs } = Astro.props;
+
+const faqSchema = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: faqs.map((faq) => ({
+    '@type': 'Question',
+    name: faq.question,
+    acceptedAnswer: {
+      '@type': 'Answer',
+      text: faq.answer,
+    },
+  })),
+};
+---
+
+<section class="mt-10">
+  <h2 class="mb-4 text-xl font-semibold text-gray-800">שאלות נפוצות</h2>
+  <div class="space-y-3">
+    {faqs.map((faq) => (
+      <details class="group rounded-lg border border-gray-200 bg-white">
+        <summary class="flex cursor-pointer items-center justify-between px-4 py-3 font-medium text-gray-800 select-none list-none">
+          {faq.question}
+          <span
+            class="ml-2 flex-shrink-0 text-gray-400 transition-transform duration-200 group-open:rotate-180"
+            aria-hidden="true"
+          >▼</span>
+        </summary>
+        <div class="border-t border-gray-100 px-4 py-3 text-sm text-gray-600">
+          {faq.answer}
+        </div>
+      </details>
+    ))}
+  </div>
+</section>
+
+<SchemaOrg schema={faqSchema} />

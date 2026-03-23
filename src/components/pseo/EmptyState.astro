@@ -1,0 +1,25 @@
+---
+const APP_URL = import.meta.env.APP_URL || 'https://app.eventflow.co.il';
+
+interface Props {
+  serviceNameHe: string;
+  cityNameHe: string;
+}
+
+const { serviceNameHe, cityNameHe } = Astro.props;
+---
+
+<div class="rounded-xl border border-dashed border-gray-300 bg-gray-50 px-6 py-12 text-center">
+  <p class="text-lg text-gray-600">
+    עדיין אין {serviceNameHe} ב{cityNameHe} ב-EventFlow
+  </p>
+  <p class="mt-2 text-sm text-gray-500">
+    היו הראשונים לפרסם את העסק שלכם באזור זה
+  </p>
+  <a
+    href={`${APP_URL}/signup`}
+    class="mt-6 inline-block rounded-lg bg-brand-gold px-6 py-3 text-sm font-semibold text-white transition hover:opacity-90"
+  >
+    הוסף את העסק שלך
+  </a>
+</div>

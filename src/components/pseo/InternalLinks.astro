@@ -1,0 +1,40 @@
+---
+import type { City } from '../../data/cities';
+import type { ServiceType } from '../../data/services';
+import CityGrid from './CityGrid.astro';
+import ServiceGrid from './ServiceGrid.astro';
+
+interface Props {
+  currentServiceSlug: string;
+  currentCitySlug: string;
+  services: ServiceType[];
+  nearbyCities: City[];
+  currentService: ServiceType;
+  currentCity: City;
+}
+
+const { currentServiceSlug, currentCitySlug, services, nearbyCities, currentService, currentCity } =
+  Astro.props;
+---
+
+<div class="space-y-8">
+  {nearbyCities.length > 0 && (
+    <section>
+      <h2 class="mb-3 text-lg font-semibold text-gray-800">
+        עוד {currentService.pluralHe} באזור
+      </h2>
+      <CityGrid cities={nearbyCities} serviceSlug={currentServiceSlug} />
+    </section>
+  )}
+
+  <section>
+    <h2 class="mb-3 text-lg font-semibold text-gray-800">
+      ספקי אירועים אחרים ב{currentCity.nameHe}
+    </h2>
+    <ServiceGrid
+      services={services}
+      citySlug={currentCitySlug}
+      excludeSlug={currentServiceSlug}
+    />
+  </section>
+</div>

@@ -1,0 +1,23 @@
+---
+import type { City } from '../../data/cities';
+
+interface Props {
+  cities: City[];
+  serviceSlug: string;
+}
+
+const { cities, serviceSlug } = Astro.props;
+---
+
+<ul class="grid grid-cols-2 gap-2 md:grid-cols-3 lg:grid-cols-4" role="list">
+  {cities.map((city) => (
+    <li>
+      <a
+        href={`/${serviceSlug}/${city.slug}`}
+        class="block rounded-lg border border-gray-200 px-3 py-2 text-center text-sm font-medium text-gray-700 transition hover:border-brand-gold hover:text-brand-gold"
+      >
+        {city.nameHe}
+      </a>
+    </li>
+  ))}
+</ul>

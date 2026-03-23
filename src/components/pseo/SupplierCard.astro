@@ -1,0 +1,68 @@
+---
+import type { PublicSupplier } from '../../lib/suppliers';
+
+interface Props {
+  supplier: PublicSupplier;
+}
+
+const { supplier } = Astro.props;
+
+const isPremium = supplier.subscription_tier === 'pro' || supplier.subscription_tier === 'enterprise';
+const stars = Math.round(supplier.avgRating);
+const descriptionTruncated = supplier.description
+  ? supplier.description.length > 120
+    ? supplier.description.slice(0, 120) + '…'
+    : supplier.description
+  : null;
+---
+
+<a
+  href={`/biz/${supplier.slug}`}
+  class:list={[
+    'block rounded-xl border border-gray-200 bg-white p-4 shadow-sm transition hover:shadow-md',
+    isPremium && 'ring-1 ring-brand-gold',
+  ]}
+>
+  <div class="flex items-start gap-3">
+    {supplier.logo_url ? (
+      <img
+        src={supplier.logo_url}
+        alt={supplier.business_name}
+        class="h-12 w-12 rounded-full object-cover flex-shrink-0"
+        loading="lazy"
+      />
+    ) : (
+      <div class="h-12 w-12 rounded-full bg-gray-100 flex items-center justify-center flex-shrink-0">
+        <span class="text-xl text-gray-400">🏢</span>
+      </div>
+    )}
+    <div class="min-w-0 flex-1">
+      <h3 class="font-semibold text-gray-900 truncate">{supplier.business_name}</h3>
+      <div class="mt-0.5 flex flex-wrap gap-1.5 items-center">
+        <span class="inline-block rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">
+          {supplier.business_type}
+        </span>
+        {supplier.city && (
+          <span class="text-xs text-gray-500">{supplier.city}</span>
+        )}
+      </div>
+    </div>
+  </div>
+
+  {descriptionTruncated && (
+    <p class="mt-2 text-sm text-gray-600 line-clamp-2">{descriptionTruncated}</p>
+  )}
+
+  {supplier.reviewCount > 0 && (
+    <div class="mt-2 flex items-center gap-1">
+      <span class="flex text-yellow-400 text-sm" aria-hidden="true">
+        {Array.from({ length: 5 }).map((_, i) => (
+          <span>{i < stars ? '★' : '☆'}</span>
+        ))}
+      </span>
+      <span class="text-xs text-gray-500">
+        {supplier.avgRating} ({supplier.reviewCount} ביקורות)
+      </span>
+    </div>
+  )}
+</a>
