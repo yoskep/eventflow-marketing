@@ -1,0 +1,31 @@
+---
+interface Heading {
+  id: string;
+  text: string;
+  level: number;
+}
+
+interface Props {
+  headings: Heading[];
+}
+
+const { headings } = Astro.props;
+---
+
+{headings.length > 0 && (
+  <nav class="bg-gray-50 rounded-xl p-5 mb-8" dir="rtl" aria-label="תוכן עניינים">
+    <h2 class="text-sm font-bold text-[#1a2744] mb-3 uppercase tracking-wide">תוכן עניינים</h2>
+    <ol class="space-y-2">
+      {headings.map((heading) => (
+        <li class={heading.level === 3 ? 'mr-4' : ''}>
+          <a
+            href={`#${heading.id}`}
+            class="text-sm text-gray-600 hover:text-[#c8a97e] transition-colors"
+          >
+            {heading.text}
+          </a>
+        </li>
+      ))}
+    </ol>
+  </nav>
+)}

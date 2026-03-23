@@ -1,0 +1,18 @@
+---
+---
+<div class="reading-progress-container">
+  <div class="reading-progress-bar"></div>
+</div>
+<style>
+  .reading-progress-container {
+    position: fixed; top: 0; left: 0; right: 0; height: 3px; z-index: 100;
+  }
+  .reading-progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #c8a97e, #e8d5b5);
+    width: 0%;
+    animation: reading-progress linear;
+    animation-timeline: scroll();
+  }
+  @keyframes reading-progress { from { width: 0%; } to { width: 100%; } }
+</style>

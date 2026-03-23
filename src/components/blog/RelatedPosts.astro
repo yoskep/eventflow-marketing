@@ -1,0 +1,29 @@
+---
+import type { BlogPost } from '@/lib/blog';
+import BlogPostCard from './BlogPostCard.astro';
+
+interface Props {
+  posts: BlogPost[];
+}
+
+const { posts } = Astro.props;
+---
+
+{posts.length > 0 && (
+  <section class="mt-16" dir="rtl">
+    <h2 class="text-2xl font-bold text-[#1a2744] mb-8">מאמרים נוספים</h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+      {posts.map((post) => (
+        <BlogPostCard
+          slug={post.slug}
+          title={post.title}
+          excerpt={post.excerpt}
+          coverImageUrl={post.cover_image_url}
+          readingTime={post.reading_time}
+          publishedAt={post.published_at}
+          category={post.category}
+        />
+      ))}
+    </div>
+  </section>
+)}

@@ -1,0 +1,51 @@
+---
+import { formatDateHe } from '@/lib/blog';
+import { getCategoryBySlug } from '@/data/categories';
+
+interface Props {
+  slug: string;
+  title: string;
+  excerpt: string | null;
+  coverImageUrl: string | null;
+  readingTime: number;
+  publishedAt: string | null;
+  category: string;
+}
+
+const { slug, title, excerpt, coverImageUrl, readingTime, publishedAt, category } = Astro.props;
+const categoryData = getCategoryBySlug(category);
+const dateStr = publishedAt ? formatDateHe(publishedAt) : '';
+---
+
+<a href={`/blog/${slug}`} class="group block bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-md transition-shadow duration-200">
+  <div class="relative h-48 bg-gradient-to-br from-[#1a2744] to-[#2d4a7a] overflow-hidden">
+    {coverImageUrl ? (
+      <img
+        src={coverImageUrl}
+        alt={title}
+        class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+        loading="lazy"
+      />
+    ) : (
+      <div class="absolute inset-0 bg-gradient-to-br from-[#1a2744] to-[#2d4a7a]" />
+    )}
+    {categoryData && (
+      <span class="absolute top-3 right-3 bg-[#c8a97e] text-[#1a2744] text-xs font-bold px-2 py-1 rounded-full">
+        {categoryData.nameHe}
+      </span>
+    )}
+  </div>
+  <div class="p-5" dir="rtl">
+    <h2 class="text-lg font-bold text-[#1a2744] mb-2 line-clamp-2 group-hover:text-[#c8a97e] transition-colors">
+      {title}
+    </h2>
+    {excerpt && (
+      <p class="text-gray-600 text-sm mb-4 line-clamp-3">{excerpt}</p>
+    )}
+    <div class="flex items-center gap-3 text-xs text-gray-400">
+      <span>{readingTime} דקות קריאה</span>
+      {dateStr && <span>·</span>}
+      {dateStr && <span>{dateStr}</span>}
+    </div>
+  </div>
+</a>
