@@ -1,0 +1,120 @@
+---
+import type { GetStaticPaths } from 'astro';
+import PageLayout from '@/layouts/PageLayout.astro';
+import SEOHead from '@/components/seo/SEOHead.astro';
+import Breadcrumbs from '@/components/seo/Breadcrumbs.astro';
+import BlogPostCard from '@/components/blog/BlogPostCard.astro';
+import CategoryPills from '@/components/blog/CategoryPills.astro';
+import CTABlock from '@/components/layout/CTABlock.astro';
+import NewsletterSignup from '@/components/blog/NewsletterSignup';
+import { getAllPublishedPosts } from '@/lib/blog';
+import { organizationSchema } from '@/lib/seo';
+
+export const getStaticPaths = (async ({ paginate }) => {
+  const posts = await getAllPublishedPosts();
+  return paginate(posts, { pageSize: 12 });
+}) satisfies GetStaticPaths;
+
+const { page } = Astro.props;
+const supabaseUrl = import.meta.env.SUPABASE_URL;
+const supabaseKey = import.meta.env.SUPABASE_ANON_KEY;
+const isFirstPage = page.currentPage === 1;
+
+const siteUrl = import.meta.env.SITE_URL || 'https://eventflow.co.il';
+const pageTitle = isFirstPage
+  ? 'בלוג EventFlow | מדריכים וטיפים לספקי אירועים'
+  : `בלוג EventFlow | עמוד ${page.currentPage}`;
+const canonicalUrl = isFirstPage ? `${siteUrl}/blog` : `${siteUrl}/blog/${page.currentPage}`;
+---
+
+<PageLayout>
+  <SEOHead
+    slot="head"
+    title={pageTitle}
+    description="מאמרים, מדריכים וטיפים לספקי שירותי אירועים בישראל — CRM, שיווק, ניהול לקוחות ועוד"
+    canonical={canonicalUrl}
+    schemas={[organizationSchema()]}
+  />
+
+  <!-- Gradient hero header -->
+  <section class="bg-gradient-to-br from-[#1a2744] via-[#1e3a5f] to-[#0f1e35] py-16 px-4 text-white" dir="rtl">
+    <div class="max-w-5xl mx-auto">
+      <Breadcrumbs items={[{ name: 'בלוג', url: `${siteUrl}/blog` }]} />
+      <h1 class="text-4xl md:text-5xl font-bold mb-4">בלוג EventFlow</h1>
+      <p class="text-lg text-gray-300 max-w-2xl">
+        מדריכים, טיפים ותובנות לספקי שירותי אירועים — כדי שתוכלו לנהל ולשווק את העסק שלכם טוב יותר
+      </p>
+    </div>
+  </section>
+
+  <!-- Category pills -->
+  <div class="max-w-5xl mx-auto px-4 py-8" dir="rtl">
+    <CategoryPills />
+  </div>
+
+  <!-- Posts grid -->
+  <div class="max-w-5xl mx-auto px-4 pb-12" dir="rtl">
+    {page.data.length === 0 ? (
+      <p class="text-center text-gray-500 py-16 text-lg">אין מאמרים עדיין. חזרו בקרוב!</p>
+    ) : (
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {page.data.map((post) => (
+          <BlogPostCard
+            slug={post.slug}
+            title={post.title}
+            excerpt={post.excerpt}
+            coverImageUrl={post.cover_image_url}
+            readingTime={post.reading_time}
+            publishedAt={post.published_at}
+            category={post.category}
+          />
+        ))}
+      </div>
+    )}
+
+    <!-- Pagination -->
+    {page.lastPage > 1 && (
+      <nav class="flex justify-center items-center gap-2 mt-12" aria-label="Pagination" dir="rtl">
+        {page.url.prev && (
+          <a
+            href={page.url.prev}
+            class="px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium hover:bg-gray-50 transition-colors"
+          >
+            הקודם
+          </a>
+        )}
+
+        {Array.from({ length: page.lastPage }, (_, i) => i + 1).map((num) => (
+          <a
+            href={num === 1 ? '/blog' : `/blog/${num}`}
+            class={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+              num === page.currentPage
+                ? 'bg-[#1a2744] text-white'
+                : 'border border-gray-300 hover:bg-gray-50'
+            }`}
+            aria-current={num === page.currentPage ? 'page' : undefined}
+          >
+            {num}
+          </a>
+        ))}
+
+        {page.url.next && (
+          <a
+            href={page.url.next}
+            class="px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium hover:bg-gray-50 transition-colors"
+          >
+            הבא
+          </a>
+        )}
+      </nav>
+    )}
+  </div>
+
+  <!-- Newsletter -->
+  <div class="max-w-2xl mx-auto px-4 pb-16" dir="rtl">
+    <NewsletterSignup client:visible supabaseUrl={supabaseUrl} supabaseKey={supabaseKey} />
+  </div>
+
+  <!-- CTA -->
+  <CTABlock />
+</PageLayout>
