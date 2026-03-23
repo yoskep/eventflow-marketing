@@ -8,6 +8,7 @@ import RelatedPosts from '@/components/blog/RelatedPosts.astro';
 import ShareButtons from '@/components/blog/ShareButtons.astro';
 import NewsletterSignup from '@/components/blog/NewsletterSignup';
 import CTABlock from '@/components/layout/CTABlock.astro';
+import FreshnessSignal from '@/components/seo/FreshnessSignal.astro';
 import { getAllPublishedPosts, getRelatedPosts, extractHeadings, addHeadingIds, formatDateHe } from '@/lib/blog';
 import { sanitize } from '@/lib/sanitize';
 import { organizationSchema, breadcrumbSchema } from '@/lib/seo';
@@ -89,6 +90,8 @@ const breadcrumbItems = [
   </section>
 
   <div class="max-w-3xl mx-auto px-4 py-10" dir="rtl">
+    <FreshnessSignal updatedDate={post.updated_at} />
+
     <!-- Cover image -->
     {post.cover_image_url && (
       <img
