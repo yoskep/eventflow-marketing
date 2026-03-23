@@ -1,0 +1,114 @@
+---
+const appUrl = import.meta.env.APP_URL || 'https://app.eventflow.co.il';
+---
+
+<section class="gradient-hero py-20 sm:py-28 overflow-hidden">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-16 animate-fade-in-up">
+      <!-- Badge -->
+      <div class="inline-flex items-center gap-2 glass px-4 py-2 rounded-full text-brand-gold text-sm font-medium mb-8">
+        <svg class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+        </svg>
+        הפלטפורמה המובילה לספקי אירועים בישראל
+      </div>
+
+      <!-- Title -->
+      <h1 class="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
+        <span class="block">תפסיקו לרדוף אחרי לידים.</span>
+        <span class="block bg-clip-text text-transparent gradient-gold">תתחילו לסגור עסקאות.</span>
+      </h1>
+
+      <!-- Subtitle -->
+      <p class="text-lg sm:text-xl text-gray-300 max-w-2xl mx-auto mb-10 leading-relaxed">
+        EventFlow מאחד את כל ניהול העסק שלכם — לידים, הצעות מחיר, חוזים, תשלומים וגלריות — במקום אחד. בלי אקסלים, בלי בלאגן.
+      </p>
+
+      <!-- CTAs -->
+      <div class="flex flex-col sm:flex-row gap-4 justify-center items-center mb-10">
+        <a
+          href={`${appUrl}/signup`}
+          class="gradient-gold text-brand-primary px-8 py-4 rounded-xl text-lg font-bold hover:opacity-90 transition-opacity shadow-lg w-full sm:w-auto"
+        >
+          התחל בחינם
+        </a>
+        <a
+          href="#features"
+          class="glass text-white px-8 py-4 rounded-xl text-lg font-medium hover:bg-white/10 transition-colors w-full sm:w-auto"
+        >
+          גלו עוד
+        </a>
+      </div>
+
+      <!-- Trust signals -->
+      <div class="flex flex-wrap justify-center gap-6 text-sm text-gray-400">
+        <span class="flex items-center gap-1">
+          <svg class="w-4 h-4 text-brand-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+          חינם לנצח
+        </span>
+        <span class="flex items-center gap-1">
+          <svg class="w-4 h-4 text-brand-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+          ללא כרטיס אשראי
+        </span>
+        <span class="flex items-center gap-1">
+          <svg class="w-4 h-4 text-brand-gold" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+          הקמה תוך 2 דקות
+        </span>
+      </div>
+    </div>
+
+    <!-- Dashboard Mockup -->
+    <div class="max-w-4xl mx-auto animate-fade-in">
+      <div class="glass rounded-2xl p-6 shadow-2xl">
+        <!-- KPI Cards -->
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
+          <div class="glass rounded-xl p-4 text-center">
+            <div class="text-2xl font-bold text-white">24</div>
+            <div class="text-xs text-gray-400 mt-1">לידים פעילים</div>
+          </div>
+          <div class="glass rounded-xl p-4 text-center">
+            <div class="text-2xl font-bold text-brand-gold">₪47,500</div>
+            <div class="text-xs text-gray-400 mt-1">הכנסות</div>
+          </div>
+          <div class="glass rounded-xl p-4 text-center">
+            <div class="text-2xl font-bold text-white">8</div>
+            <div class="text-xs text-gray-400 mt-1">הצעות ממתינות</div>
+          </div>
+          <div class="glass rounded-xl p-4 text-center">
+            <div class="text-2xl font-bold text-white">5</div>
+            <div class="text-xs text-gray-400 mt-1">אירועים קרובים</div>
+          </div>
+        </div>
+
+        <!-- Pipeline Bar -->
+        <div class="glass rounded-xl p-4">
+          <div class="text-sm text-gray-400 mb-3">צינור מכירות</div>
+          <div class="flex gap-2 items-center">
+            <div class="flex-1 bg-blue-500/30 rounded-lg px-3 py-2 text-center">
+              <div class="text-xs text-blue-300 font-medium">חדש</div>
+              <div class="w-full bg-blue-500/50 rounded-full h-1.5 mt-2"></div>
+            </div>
+            <div class="flex-1 bg-yellow-500/30 rounded-lg px-3 py-2 text-center">
+              <div class="text-xs text-yellow-300 font-medium">נוצר קשר</div>
+              <div class="w-3/4 bg-yellow-500/50 rounded-full h-1.5 mt-2 mx-auto"></div>
+            </div>
+            <div class="flex-1 bg-purple-500/30 rounded-lg px-3 py-2 text-center">
+              <div class="text-xs text-purple-300 font-medium">הצעה נשלחה</div>
+              <div class="w-1/2 bg-purple-500/50 rounded-full h-1.5 mt-2 mx-auto"></div>
+            </div>
+            <div class="flex-1 bg-green-500/30 rounded-lg px-3 py-2 text-center">
+              <div class="text-xs text-green-300 font-medium">חתום</div>
+              <div class="w-1/3 bg-green-500/50 rounded-full h-1.5 mt-2 mx-auto"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

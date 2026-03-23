@@ -1,0 +1,29 @@
+---
+interface Props {
+  title: string;
+  subtitle?: string;
+  buttonText: string;
+  buttonHref: string;
+  variant?: 'primary' | 'gold';
+}
+
+const { title, subtitle, buttonText, buttonHref, variant = 'primary' } = Astro.props;
+const appUrl = import.meta.env.APP_URL || 'https://app.eventflow.co.il';
+const href = buttonHref.startsWith('http') ? buttonHref : `${appUrl}${buttonHref}`;
+---
+
+<section class={`py-24 ${variant === 'gold' ? 'gradient-hero' : 'bg-brand-primary'}`}>
+  <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h2 class="text-3xl sm:text-4xl font-bold text-white mb-4">{title}</h2>
+    {subtitle && (
+      <p class="text-lg text-gray-300 mb-8 max-w-2xl mx-auto">{subtitle}</p>
+    )}
+    <a
+      href={href}
+      class="inline-block gradient-gold text-brand-primary px-8 py-4 rounded-xl text-lg font-bold hover:opacity-90 transition-opacity shadow-lg"
+    >
+      {buttonText}
+    </a>
+    <slot />
+  </div>
+</section>

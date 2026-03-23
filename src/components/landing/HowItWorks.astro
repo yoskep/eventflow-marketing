@@ -1,0 +1,45 @@
+---
+const steps = [
+  {
+    number: '01',
+    title: 'הרשמה חינמית',
+    desc: 'נרשמים עם Google או אימייל, ממלאים כמה פרטים על העסק — וסיימתם.',
+  },
+  {
+    number: '02',
+    title: 'הוסיפו את הלידים',
+    desc: 'הזינו את הלידים הקיימים שלכם או התחילו לקבל פניות חדשות ישירות למערכת.',
+  },
+  {
+    number: '03',
+    title: 'אוטומציה ושליטה',
+    desc: 'הגדירו תזכורות אוטומטיות, שלחו הצעות מחיר וחוזים — והתמקדו באירוע עצמו.',
+  },
+];
+---
+
+<section class="py-20 bg-brand-cream">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-14 animate-fade-in-up">
+      <div class="inline-flex items-center gap-2 bg-brand-gold/10 text-brand-gold px-4 py-1.5 rounded-full text-sm font-medium mb-4">
+        3 צעדים
+      </div>
+      <h2 class="text-3xl sm:text-4xl font-bold text-brand-primary">מתחילים לעבוד תוך דקות</h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 relative">
+      <!-- Connector line (desktop only) -->
+      <div class="hidden md:block absolute top-10 right-[16.67%] left-[16.67%] h-px bg-brand-gold/20"></div>
+
+      {steps.map((step) => (
+        <div class="text-center relative">
+          <div class="inline-flex items-center justify-center w-20 h-20 rounded-full gradient-gold text-brand-primary text-2xl font-bold mb-6 shadow-lg">
+            {step.number}
+          </div>
+          <h3 class="text-xl font-bold text-brand-primary mb-3">{step.title}</h3>
+          <p class="text-gray-600 leading-relaxed max-w-xs mx-auto">{step.desc}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

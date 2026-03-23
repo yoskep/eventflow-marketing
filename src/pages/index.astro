@@ -1,12 +1,38 @@
 ---
-// Placeholder — will be replaced in Task 4
+import PageLayout from '@/layouts/PageLayout.astro';
+import SEOHead from '@/components/seo/SEOHead.astro';
+import HeroSection from '@/components/landing/HeroSection.astro';
+import PainPoints from '@/components/landing/PainPoints.astro';
+import FeaturesGrid from '@/components/landing/FeaturesGrid.astro';
+import StatsBar from '@/components/landing/StatsBar.astro';
+import HowItWorks from '@/components/landing/HowItWorks.astro';
+import Testimonials from '@/components/landing/Testimonials.astro';
+import CTABlock from '@/components/layout/CTABlock.astro';
+import { organizationSchema, websiteSchema, softwareAppSchema } from '@/lib/seo';
 ---
-<html lang="he" dir="rtl">
-  <head>
-    <meta charset="UTF-8" />
-    <title>EventFlow</title>
-  </head>
-  <body>
-    <h1>EventFlow Marketing</h1>
-  </body>
-</html>
+
+<PageLayout>
+  <SEOHead
+    slot="head"
+    title="EventFlow — ניהול עסק אירועים חכם"
+    description="מערכת CRM לספקי שירותי אירועים בישראל — לידים, הצעות מחיר, חוזים דיגיטליים, תשלומים, גלריות וביקורות במערכת אחת"
+    ogType="website"
+    schemas={[organizationSchema(), websiteSchema(), softwareAppSchema()]}
+  />
+
+  <HeroSection />
+  <PainPoints />
+  <FeaturesGrid />
+  <StatsBar />
+  <HowItWorks />
+  <Testimonials />
+  <CTABlock
+    title="מוכנים לנהל את העסק בצורה חכמה?"
+    subtitle="הצטרפו לספקי האירועים שכבר מנהלים הכל ממקום אחד. בלי התחייבות, בלי כרטיס אשראי."
+    buttonText="התחל בחינם"
+    buttonHref="/signup"
+    variant="gold"
+  >
+    <p class="text-gray-400 text-sm mt-4">ללא כרטיס אשראי · ללא התחייבות · חינם לנצח בחבילה הבסיסית</p>
+  </CTABlock>
+</PageLayout>
