@@ -1,0 +1,91 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+import SEOHead from '@/components/seo/SEOHead.astro';
+import Breadcrumbs from '@/components/seo/Breadcrumbs.astro';
+import { organizationSchema, webPageSchema } from '@/lib/seo';
+
+const siteUrl = import.meta.env.SITE_URL || 'https://eventflow.co.il';
+---
+
+<PageLayout>
+  <SEOHead
+    slot="head"
+    title="הצהרת נגישות — EventFlow"
+    description='הצהרת הנגישות של EventFlow — מידע על עמידה בתקן הנגישות הישראלי ת"י 5568 ותקן WCAG 2.1 AA.'
+    schemas={[organizationSchema(), webPageSchema('הצהרת נגישות — EventFlow', 'הצהרת הנגישות של EventFlow — מידע על עמידה בתקן הנגישות הישראלי ת"י 5568 ותקן WCAG 2.1 AA.', `${siteUrl}/accessibility`)]}
+  />
+
+  <section class="gradient-hero py-16 px-4">
+    <div class="max-w-3xl mx-auto">
+      <Breadcrumbs items={[{ name: 'הצהרת נגישות', url: '/accessibility' }]} />
+      <h1 class="text-4xl font-bold text-white mb-4">הצהרת נגישות</h1>
+    </div>
+  </section>
+
+  <article class="max-w-3xl mx-auto px-4 py-12 prose prose-lg" dir="rtl">
+    <p><strong>עדכון אחרון:</strong> מרץ 2026</p>
+
+    <section>
+      <h2>מחויבות לנגישות</h2>
+      <p>
+        EventFlow מחויבת להנגשת האתר והשירותים הדיגיטליים שלה לכלל האוכלוסייה, לרבות אנשים עם מוגבלויות,
+        בהתאם לחוק שוויון זכויות לאנשים עם מוגבלות, התשנ"ח-1998, ותקנות שוויון זכויות לאנשים עם מוגבלות
+        (התאמות נגישות לשירות), התשע"ג-2013.
+      </p>
+    </section>
+
+    <section>
+      <h2>תקן הנגישות</h2>
+      <p>
+        האתר עומד בדרישות תקן הנגישות הישראלי (ת"י 5568) ברמת AA של הנחיות WCAG 2.1,
+        בהתאם לדרישות החוק הישראלי.
+      </p>
+    </section>
+
+    <section>
+      <h2>התאמות הנגישות באתר</h2>
+      <ul>
+        <li>תמיכה בניווט מלא באמצעות מקלדת</li>
+        <li>תמיכה בקוראי מסך (Screen Readers)</li>
+        <li>טקסטים חלופיים לתמונות</li>
+        <li>ניגודיות צבעים מספקת</li>
+        <li>מבנה כותרות היררכי ותקין</li>
+        <li>טפסים נגישים עם תוויות מתאימות</li>
+        <li>תמיכה בשינוי גודל טקסט</li>
+        <li>תמיכה בכיוון RTL (ימין לשמאל)</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>דפדפנים וטכנולוגיות מסייעות</h2>
+      <p>האתר נבדק ותואם לעבודה עם:</p>
+      <ul>
+        <li>Google Chrome (גרסה אחרונה)</li>
+        <li>Mozilla Firefox (גרסה אחרונה)</li>
+        <li>Apple Safari (גרסה אחרונה)</li>
+        <li>Microsoft Edge (גרסה אחרונה)</li>
+        <li>קוראי מסך: NVDA, JAWS, VoiceOver</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2>יצירת קשר בנושא נגישות</h2>
+      <p>
+        אם נתקלתם בבעיית נגישות באתר, או שיש לכם הצעות לשיפור הנגישות, אנא פנו אלינו:
+      </p>
+      <ul>
+        <li>דוא"ל: <a href="mailto:accessibility@eventflow.co.il">accessibility@eventflow.co.il</a></li>
+        <li>טלפון: 03-0000000</li>
+      </ul>
+      <p>אנו מתחייבים לטפל בפניות נגישות תוך 7 ימי עסקים.</p>
+    </section>
+
+    <section>
+      <h2>נציב נגישות</h2>
+      <p>
+        נציב/ת הנגישות של EventFlow אחראי/ת על תיאום הנגשת השירותים הדיגיטליים.
+        לפניות בנושא נגישות ניתן לפנות לנציב/ת הנגישות בפרטי הקשר שלעיל.
+      </p>
+    </section>
+  </article>
+</PageLayout>

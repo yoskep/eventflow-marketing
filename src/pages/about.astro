@@ -1,0 +1,48 @@
+---
+import PageLayout from '@/layouts/PageLayout.astro';
+import SEOHead from '@/components/seo/SEOHead.astro';
+import Breadcrumbs from '@/components/seo/Breadcrumbs.astro';
+import { organizationSchema, webPageSchema } from '@/lib/seo';
+
+const siteUrl = import.meta.env.SITE_URL || 'https://eventflow.co.il';
+---
+
+<PageLayout>
+  <SEOHead
+    slot="head"
+    title="אודות — EventFlow"
+    description="EventFlow היא מערכת CRM חכמה לספקי שירותי אירועים בישראל. הכירו את החזון, הכלים והצוות שמאחורי המוצר."
+    schemas={[organizationSchema(), webPageSchema('אודות — EventFlow', 'EventFlow היא מערכת CRM חכמה לספקי שירותי אירועים בישראל. הכירו את החזון, הכלים והצוות שמאחורי המוצר.', `${siteUrl}/about`)]}
+  />
+
+  <section class="gradient-hero py-16 px-4">
+    <div class="max-w-3xl mx-auto">
+      <Breadcrumbs items={[{ name: 'אודות', url: '/about' }]} />
+      <h1 class="text-4xl font-bold text-white mb-4">אודות</h1>
+    </div>
+  </section>
+
+  <article class="max-w-3xl mx-auto px-4 py-12 prose prose-lg" dir="rtl">
+    <h2>EventFlow — ניהול אירועים חכם</h2>
+    <p>EventFlow היא מערכת ניהול עסקית (CRM) שנבנתה במיוחד עבור ספקי שירותי אירועים בישראל. המערכת מאפשרת לנהל את כל ההיבטים של העסק — מלידים ועד תשלומים — במקום אחד.</p>
+
+    <h2>החזון שלנו</h2>
+    <p>אנחנו מאמינים שכל ספק אירועים, קטן כגדול, ראוי לכלים מקצועיים שיעזרו לו להצליח. החזון שלנו הוא ליצור את הפלטפורמה המובילה לניהול עסקי אירועים בישראל.</p>
+
+    <h2>מה אנחנו מציעים</h2>
+    <ul>
+      <li><strong>ניהול לידים</strong> — מעקב אחר כל פנייה עם לוח קנבן חכם</li>
+      <li><strong>הצעות מחיר</strong> — יצירה ושליחה של הצעות מחיר מקצועיות</li>
+      <li><strong>חוזים דיגיטליים</strong> — חתימה דיגיטלית מאובטחת</li>
+      <li><strong>ניהול תשלומים</strong> — מעקב אחר תשלומים ותזרים</li>
+      <li><strong>גלריות</strong> — הצגת עבודות עם סנכרון Google Drive</li>
+      <li><strong>ביקורות</strong> — איסוף אוטומטי של חוות דעת מלקוחות</li>
+    </ul>
+
+    <h2>למי זה מתאים?</h2>
+    <p>צלמים, DJ-ים, מפיקי אירועים, אולמות, קייטרינג, מעצבי פרחים, מאפרות, ולכל ספק שירותי אירועים שרוצה לנהל את העסק שלו בצורה מקצועית.</p>
+
+    <h2>יצירת קשר</h2>
+    <p>נשמח לשמוע מכם! שלחו לנו מייל ל-<a href="mailto:support@eventflow.co.il">support@eventflow.co.il</a></p>
+  </article>
+</PageLayout>
