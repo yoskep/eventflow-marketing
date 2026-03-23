@@ -1,0 +1,114 @@
+---
+import type { GetStaticPaths } from 'astro';
+import PageLayout from '@/layouts/PageLayout.astro';
+import SEOHead from '@/components/seo/SEOHead.astro';
+import Breadcrumbs from '@/components/seo/Breadcrumbs.astro';
+import SupplierCard from '@/components/pseo/SupplierCard.astro';
+import EmptyState from '@/components/pseo/EmptyState.astro';
+import FAQSection from '@/components/pseo/FAQSection.astro';
+import InternalLinks from '@/components/pseo/InternalLinks.astro';
+import CTABlock from '@/components/layout/CTABlock.astro';
+import { services, getServiceBySlug, RESERVED_PATHS } from '@/data/services';
+import { cities, getCityBySlug, getNearbyCities } from '@/data/cities';
+import { genericFaqs, interpolateFaqs } from '@/data/faqs';
+import { getAllPublicSuppliers, filterByService, filterByCity, sortSuppliers } from '@/lib/suppliers';
+import { organizationSchema, breadcrumbSchema } from '@/lib/seo';
+
+export const getStaticPaths = (async () => {
+  // Batch fetch ALL suppliers once
+  const allSuppliers = await getAllPublicSuppliers();
+
+  const paths = [];
+  for (const service of services) {
+    // Skip if slug collides with reserved path
+    if (RESERVED_PATHS.includes(service.slug)) continue;
+
+    for (const city of cities) {
+      const serviceSuppliers = filterByService(allSuppliers, service.dbType);
+      const citySuppliers = filterByCity(serviceSuppliers, city.nameHe);
+      const sorted = sortSuppliers(citySuppliers);
+
+      paths.push({
+        params: { service: service.slug, city: city.slug },
+        props: {
+          service,
+          city,
+          suppliers: sorted,
+          nearbyCities: getNearbyCities(city),
+        },
+      });
+    }
+  }
+  return paths;
+}) satisfies GetStaticPaths;
+
+const { service, city, suppliers, nearbyCities } = Astro.props;
+const siteUrl = import.meta.env.SITE_URL || 'https://eventflow.co.il';
+const pageUrl = `${siteUrl}/${service.slug}/${city.slug}`;
+const faqs = interpolateFaqs(genericFaqs, service.nameHe, city.nameHe);
+
+const breadcrumbItems = [
+  { name: service.nameHe, url: `${siteUrl}/${service.slug}` },
+  { name: city.nameHe, url: pageUrl },
+];
+
+const schemas = [
+  organizationSchema(),
+  breadcrumbSchema(breadcrumbItems),
+];
+---
+
+<PageLayout>
+  <SEOHead
+    slot="head"
+    title={`${service.nameHe} ב${city.nameHe} | EventFlow`}
+    description={`מצאו ${service.pluralHe} ב${city.nameHe}. השוו מחירים, קראו ביקורות ובחרו את הספק המושלם לאירוע שלכם.`}
+    canonical={pageUrl}
+    schemas={schemas}
+  />
+
+  <section class="gradient-hero py-12 px-4 sm:px-6 lg:px-8">
+    <div class="max-w-5xl mx-auto">
+      <Breadcrumbs items={breadcrumbItems} />
+      <h1 class="text-3xl sm:text-4xl font-bold text-white mt-2">
+        {service.nameHe} ב{city.nameHe}
+      </h1>
+      <p class="mt-3 text-lg text-gray-300 max-w-2xl">
+        {service.descriptionHe} ב{city.nameHe}. {city.description}
+      </p>
+    </div>
+  </section>
+
+  <div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    {suppliers.length > 0 ? (
+      <div class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {suppliers.map((supplier) => (
+          <SupplierCard supplier={supplier} />
+        ))}
+      </div>
+    ) : (
+      <EmptyState serviceNameHe={service.nameHe} cityNameHe={city.nameHe} />
+    )}
+
+    <FAQSection faqs={faqs} />
+
+    <div class="mt-10">
+      <InternalLinks
+        currentServiceSlug={service.slug}
+        currentCitySlug={city.slug}
+        services={services}
+        nearbyCities={nearbyCities}
+        currentService={service}
+        currentCity={city}
+      />
+    </div>
+  </div>
+
+  <CTABlock
+    title="רוצים להופיע כאן?"
+    subtitle={`הצטרפו לEventFlow והגיעו ללקוחות שמחפשים ${service.nameHe} ב${city.nameHe}`}
+    buttonText="הוסף את העסק שלך"
+    buttonHref="/signup"
+    variant="gold"
+  />
+</PageLayout>
