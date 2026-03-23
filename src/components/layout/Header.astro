@@ -1,0 +1,42 @@
+---
+const appUrl = import.meta.env.APP_URL || 'https://app.eventflow.co.il';
+
+interface NavItem {
+  label: string;
+  href: string;
+}
+
+const navItems: NavItem[] = [
+  { label: 'בלוג', href: '/blog' },
+  { label: 'מחירים', href: '/pricing' },
+  { label: 'אודות', href: '/about' },
+];
+---
+
+<header class="sticky top-0 z-50 bg-brand-primary/95 backdrop-blur-sm border-b border-white/10">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <a href="/" class="flex items-center gap-2">
+        <img src="/icons/icon-192.png" alt="EventFlow" class="h-8 w-8 rounded-lg" />
+        <span class="text-white font-bold text-lg">EventFlow</span>
+      </a>
+
+      <nav class="hidden md:flex items-center gap-6">
+        {navItems.map((item) => (
+          <a href={item.href} class="text-gray-300 hover:text-white transition-colors text-sm font-medium">
+            {item.label}
+          </a>
+        ))}
+      </nav>
+
+      <div class="flex items-center gap-3">
+        <a href={`${appUrl}/login`} class="text-gray-300 hover:text-white transition-colors text-sm font-medium hidden sm:inline">
+          התחברות
+        </a>
+        <a href={`${appUrl}/signup`} class="gradient-gold text-brand-primary px-4 py-2 rounded-lg text-sm font-bold hover:opacity-90 transition-opacity">
+          הרשמה חינם
+        </a>
+      </div>
+    </div>
+  </div>
+</header>

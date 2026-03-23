@@ -1,0 +1,62 @@
+---
+const appUrl = import.meta.env.APP_URL || 'https://app.eventflow.co.il';
+const currentYear = new Date().getFullYear();
+
+interface FooterSection {
+  title: string;
+  links: { label: string; href: string }[];
+}
+
+const sections: FooterSection[] = [
+  {
+    title: 'מוצר',
+    links: [
+      { label: 'מחירים', href: '/pricing' },
+      { label: 'בלוג', href: '/blog' },
+      { label: 'אודות', href: '/about' },
+    ],
+  },
+  {
+    title: 'משפטי',
+    links: [
+      { label: 'תקנון', href: '/terms' },
+      { label: 'פרטיות', href: '/privacy' },
+      { label: 'נגישות', href: '/accessibility' },
+    ],
+  },
+  {
+    title: 'התחלה',
+    links: [
+      { label: 'הרשמה חינם', href: `${appUrl}/signup` },
+      { label: 'התחברות', href: `${appUrl}/login` },
+    ],
+  },
+];
+---
+
+<footer class="bg-brand-primary text-gray-400 border-t border-white/10">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-8">
+      <div>
+        <a href="/" class="flex items-center gap-2 mb-4">
+          <img src="/icons/icon-192.png" alt="EventFlow" class="h-8 w-8 rounded-lg" />
+          <span class="text-white font-bold text-lg">EventFlow</span>
+        </a>
+        <p class="text-sm">מערכת CRM לספקי שירותי אירועים בישראל</p>
+      </div>
+      {sections.map((section) => (
+        <div>
+          <h3 class="text-white font-semibold text-sm mb-3">{section.title}</h3>
+          <ul class="space-y-2">
+            {section.links.map((link) => (
+              <li><a href={link.href} class="text-sm hover:text-white transition-colors">{link.label}</a></li>
+            ))}
+          </ul>
+        </div>
+      ))}
+    </div>
+    <div class="border-t border-white/10 mt-8 pt-8 text-center text-sm">
+      <p>&copy; {currentYear} EventFlow IL. כל הזכויות שמורות.</p>
+    </div>
+  </div>
+</footer>
