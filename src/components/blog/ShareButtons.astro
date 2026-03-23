@@ -16,6 +16,7 @@ const encodedTitle = encodeURIComponent(title);
     href={`https://wa.me/?text=${encodedTitle}%20${encodedUrl}`}
     target="_blank"
     rel="noopener noreferrer"
+    data-track-share="whatsapp"
     class="flex items-center justify-center w-9 h-9 rounded-full bg-[#25D366] text-white hover:opacity-90 transition-opacity"
     aria-label="שתף בוואטסאפ"
   >
@@ -28,6 +29,7 @@ const encodedTitle = encodeURIComponent(title);
     href={`https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`}
     target="_blank"
     rel="noopener noreferrer"
+    data-track-share="facebook"
     class="flex items-center justify-center w-9 h-9 rounded-full bg-[#1877F2] text-white hover:opacity-90 transition-opacity"
     aria-label="שתף בפייסבוק"
   >
@@ -40,6 +42,7 @@ const encodedTitle = encodeURIComponent(title);
     href={`https://www.linkedin.com/sharing/share-offsite/?url=${encodedUrl}`}
     target="_blank"
     rel="noopener noreferrer"
+    data-track-share="linkedin"
     class="flex items-center justify-center w-9 h-9 rounded-full bg-[#0A66C2] text-white hover:opacity-90 transition-opacity"
     aria-label="שתף בלינקדאין"
   >
