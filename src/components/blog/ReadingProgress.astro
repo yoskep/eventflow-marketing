@@ -11,8 +11,24 @@
     height: 100%;
     background: linear-gradient(90deg, #c8a97e, #e8d5b5);
     width: 0%;
-    animation: reading-progress linear;
-    animation-timeline: scroll();
+  }
+  @supports (animation-timeline: scroll()) {
+    .reading-progress-bar {
+      animation: reading-progress linear;
+      animation-timeline: scroll();
+    }
   }
   @keyframes reading-progress { from { width: 0%; } to { width: 100%; } }
 </style>
+<script>
+  if (!CSS.supports('animation-timeline', 'scroll()')) {
+    const bar = document.querySelector('.reading-progress-bar');
+    if (bar instanceof HTMLElement) {
+      window.addEventListener('scroll', () => {
+        const scrollTop = document.documentElement.scrollTop;
+        const scrollHeight = document.documentElement.scrollHeight - document.documentElement.clientHeight;
+        bar.style.width = scrollHeight > 0 ? `${(scrollTop / scrollHeight) * 100}%` : '0%';
+      }, { passive: true });
+    }
+  }
+</script>

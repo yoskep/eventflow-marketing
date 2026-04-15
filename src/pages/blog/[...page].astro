@@ -6,7 +6,7 @@ import Breadcrumbs from '@/components/seo/Breadcrumbs.astro';
 import BlogPostCard from '@/components/blog/BlogPostCard.astro';
 import CategoryPills from '@/components/blog/CategoryPills.astro';
 import CTABlock from '@/components/layout/CTABlock.astro';
-import NewsletterSignup from '@/components/blog/NewsletterSignup';
+import NewsletterSignup from '@/components/blog/NewsletterSignup.astro';
 import { getAllPublishedPosts } from '@/lib/blog';
 import { organizationSchema } from '@/lib/seo';
 
@@ -16,8 +16,6 @@ export const getStaticPaths = (async ({ paginate }) => {
 }) satisfies GetStaticPaths;
 
 const { page } = Astro.props;
-const supabaseUrl = import.meta.env.SUPABASE_URL;
-const supabaseKey = import.meta.env.SUPABASE_ANON_KEY;
 const isFirstPage = page.currentPage === 1;
 
 const siteUrl = import.meta.env.SITE_URL || 'https://eventflow.co.il';
@@ -112,7 +110,7 @@ const canonicalUrl = isFirstPage ? `${siteUrl}/blog` : `${siteUrl}/blog/${page.c
 
   <!-- Newsletter -->
   <div class="max-w-2xl mx-auto px-4 pb-16" dir="rtl">
-    <NewsletterSignup client:visible supabaseUrl={supabaseUrl} supabaseKey={supabaseKey} />
+    <NewsletterSignup />
   </div>
 
   <!-- CTA -->

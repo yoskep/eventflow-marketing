@@ -2,6 +2,7 @@
 import BaseLayout from './BaseLayout.astro';
 import Header from '@/components/layout/Header.astro';
 import Footer from '@/components/layout/Footer.astro';
+import MobileCta from '@/components/layout/MobileCta.astro';
 
 interface Props {
   class?: string;
@@ -13,8 +14,9 @@ const { class: className } = Astro.props;
 <BaseLayout>
   <slot name="head" slot="head" />
   <Header />
-  <main class={className}>
+  <main id="main-content" class={className}>
     <slot />
   </main>
   <Footer />
+  <MobileCta />
 </BaseLayout>

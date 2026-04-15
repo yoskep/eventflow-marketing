@@ -1,0 +1,89 @@
+---
+const supabaseUrl = import.meta.env.SUPABASE_URL;
+const supabaseKey = import.meta.env.SUPABASE_ANON_KEY;
+---
+
+<div id="newsletter-signup" class="bg-[#1a2744] rounded-xl p-8 text-center" dir="rtl">
+  <h3 class="text-xl font-bold text-white mb-2">הישארו מעודכנים</h3>
+  <p class="text-gray-300 text-sm mb-4">קבלו טיפים ומדריכים חדשים ישירות למייל — בלי ספאם</p>
+  <form id="newsletter-form" class="flex flex-col sm:flex-row gap-3 max-w-md mx-auto">
+    <input
+      type="email"
+      required
+      name="email"
+      placeholder="הכניסו את המייל שלכם"
+      class="flex-1 px-4 py-3 rounded-lg text-sm bg-white/10 text-white placeholder-gray-400 border border-white/20 focus:outline-none focus:border-white/50"
+      dir="ltr"
+    />
+    <button
+      type="submit"
+      class="px-6 py-3 rounded-lg text-sm font-bold bg-gradient-to-r from-[#c8a97e] to-[#e8d5b5] text-[#1a2744] hover:opacity-90 transition-opacity disabled:opacity-50"
+    >
+      הרשמה
+    </button>
+  </form>
+  <p id="newsletter-error" class="text-red-300 text-sm mt-2 hidden">שגיאה. נסו שוב.</p>
+</div>
+
+<div id="newsletter-success" class="bg-green-50 border border-green-200 rounded-xl p-6 text-center hidden" dir="rtl">
+  <p class="text-green-800 font-bold">תודה! נרשמת בהצלחה לניוזלטר</p>
+</div>
+
+<script define:vars={{ supabaseUrl, supabaseKey }}>
+  const form = document.getElementById('newsletter-form');
+  const signup = document.getElementById('newsletter-signup');
+  const success = document.getElementById('newsletter-success');
+  const error = document.getElementById('newsletter-error');
+  const button = form.querySelector('button');
+
+  const RATE_LIMIT_KEY = 'newsletter_last_submit';
+  const RATE_LIMIT_MS = 30000;
+
+  function isRateLimited() {
+    const last = localStorage.getItem(RATE_LIMIT_KEY);
+    if (!last) return false;
+    return Date.now() - parseInt(last, 10) < RATE_LIMIT_MS;
+  }
+
+  form.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const email = form.querySelector('input[name="email"]').value;
+    if (!email) return;
+
+    if (isRateLimited()) {
+      error.textContent = 'נא להמתין לפני שליחה נוספת';
+      error.classList.remove('hidden');
+      return;
+    }
+
+    button.disabled = true;
+    button.textContent = '...';
+    error.classList.add('hidden');
+
+    try {
+      const res = await fetch(`${supabaseUrl}/rest/v1/newsletter_subscribers`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          apikey: supabaseKey,
+          Authorization: `Bearer ${supabaseKey}`,
+          Prefer: 'return=minimal',
+        },
+        body: JSON.stringify({ email, source: 'blog' }),
+      });
+
+      if (res.ok || res.status === 201 || res.status === 409) {
+        localStorage.setItem(RATE_LIMIT_KEY, Date.now().toString());
+        signup.classList.add('hidden');
+        success.classList.remove('hidden');
+      } else {
+        error.classList.remove('hidden');
+      }
+    } catch {
+      error.textContent = 'שגיאה. נסו שוב.';
+      error.classList.remove('hidden');
+      button.disabled = false;
+      button.textContent = 'הרשמה';
+    }
+  });
+</script>

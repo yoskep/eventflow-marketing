@@ -1,0 +1,44 @@
+---
+const benefits = [
+  {
+    icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z',
+    title: 'חוסכים שעות כל יום',
+    text: 'הצעות מחיר, חוזים ותשלומים — הכל ממקום אחד. בלי אקסלים, בלי קבוצות וואטסאפ.',
+  },
+  {
+    icon: 'M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z M15 13a3 3 0 11-6 0 3 3 0 016 0z',
+    title: 'גלריות שמרשימות לקוחות',
+    text: 'גלריות תמונות מקצועיות עם בחירת תמונות אונליין. הלקוחות בוחרים, אתם מקבלים את הבחירה.',
+  },
+  {
+    icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z',
+    title: 'תמונה ברורה של העסק',
+    text: 'דשבורד עם נתונים בזמן אמת — לידים, הכנסות, אירועים קרובים. תמיד יודעים מה קורה.',
+  },
+];
+---
+
+<section class="py-20 bg-white">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-14 animate-fade-in-up">
+      <div class="inline-flex items-center gap-2 bg-brand-gold/10 text-brand-gold px-4 py-1.5 rounded-full text-sm font-medium mb-4">
+        למה EventFlow
+      </div>
+      <h2 class="text-3xl sm:text-4xl font-bold text-brand-primary">הכלים שספקי אירועים צריכים</h2>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+      {benefits.map((b) => (
+        <div class="bg-brand-cream rounded-2xl p-8 border border-gray-100 hover:shadow-md transition-shadow text-center">
+          <div class="w-14 h-14 rounded-xl gradient-gold flex items-center justify-center mx-auto mb-5">
+            <svg class="w-7 h-7 text-brand-primary" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+              <path stroke-linecap="round" stroke-linejoin="round" d={b.icon} />
+            </svg>
+          </div>
+          <h3 class="text-xl font-bold text-brand-primary mb-3">{b.title}</h3>
+          <p class="text-gray-600 leading-relaxed">{b.text}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

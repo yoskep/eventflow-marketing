@@ -19,13 +19,21 @@ export interface BlogPost {
 }
 
 export async function getAllPublishedPosts(): Promise<BlogPost[]> {
-  const { data, error } = await supabase
-    .from('blog_posts')
-    .select('*')
-    .eq('status', 'published')
-    .order('published_at', { ascending: false });
-  if (error) throw new Error(`Failed to fetch blog posts: ${error.message}`);
-  return (data ?? []) as BlogPost[];
+  try {
+    const { data, error } = await supabase
+      .from('blog_posts')
+      .select('*')
+      .eq('status', 'published')
+      .order('published_at', { ascending: false });
+    if (error) {
+      console.warn('Failed to fetch blog posts:', error.message);
+      return [];
+    }
+    return (data ?? []) as BlogPost[];
+  } catch (e) {
+    console.warn('Failed to fetch blog posts:', e instanceof Error ? e.message : e);
+    return [];
+  }
 }
 
 export async function getPostBySlug(slug: string): Promise<BlogPost | null> {

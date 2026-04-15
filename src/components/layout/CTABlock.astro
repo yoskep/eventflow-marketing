@@ -7,7 +7,7 @@ interface Props {
   variant?: 'primary' | 'gold';
 }
 
-const { title, subtitle, buttonText, buttonHref, variant = 'primary' } = Astro.props;
+const { title = 'מוכנים להתחיל?', subtitle, buttonText = 'התחל בחינם', buttonHref = '/signup', variant = 'primary' } = Astro.props;
 const appUrl = import.meta.env.APP_URL || 'https://app.eventflow.co.il';
 const href = buttonHref.startsWith('http') ? buttonHref : `${appUrl}${buttonHref}`;
 ---

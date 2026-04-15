@@ -17,38 +17,43 @@ export interface PublicSupplier {
 
 // Fetch all public suppliers with ratings — called ONCE at build time
 export async function getAllPublicSuppliers(): Promise<PublicSupplier[]> {
-  const { data: suppliers, error } = await supabase
-    .from('suppliers')
-    .select('id, business_name, business_type, city, slug, description, logo_url, phone, website_url, subscription_tier')
-    .eq('onboarding_completed', true)
-    .not('slug', 'is', null);
+  try {
+    const { data: suppliers, error } = await supabase
+      .from('suppliers')
+      .select('id, business_name, business_type, city, slug, description, logo_url, phone, website_url, subscription_tier')
+      .eq('onboarding_completed', true)
+      .not('slug', 'is', null);
 
-  if (error) {
-    console.warn('Failed to fetch suppliers:', error.message);
+    if (error) {
+      console.warn('Failed to fetch suppliers:', error.message);
+      return [];
+    }
+
+    const { data: reviews } = await supabase
+      .from('reviews')
+      .select('business_id, rating')
+      .eq('is_public', true);
+
+    const ratingMap = new Map<string, { sum: number; count: number }>();
+    (reviews ?? []).forEach((r: { business_id: string; rating: number }) => {
+      const existing = ratingMap.get(r.business_id) ?? { sum: 0, count: 0 };
+      existing.sum += r.rating;
+      existing.count += 1;
+      ratingMap.set(r.business_id, existing);
+    });
+
+    return (suppliers ?? []).map((s) => {
+      const rating = ratingMap.get(s.id);
+      return {
+        ...s,
+        avgRating: rating ? Math.round((rating.sum / rating.count) * 10) / 10 : 0,
+        reviewCount: rating?.count ?? 0,
+      };
+    });
+  } catch (e) {
+    console.warn('Failed to fetch suppliers:', e instanceof Error ? e.message : e);
     return [];
   }
-
-  const { data: reviews } = await supabase
-    .from('reviews')
-    .select('business_id, rating')
-    .eq('is_public', true);
-
-  const ratingMap = new Map<string, { sum: number; count: number }>();
-  (reviews ?? []).forEach((r: { business_id: string; rating: number }) => {
-    const existing = ratingMap.get(r.business_id) ?? { sum: 0, count: 0 };
-    existing.sum += r.rating;
-    existing.count += 1;
-    ratingMap.set(r.business_id, existing);
-  });
-
-  return (suppliers ?? []).map((s) => {
-    const rating = ratingMap.get(s.id);
-    return {
-      ...s,
-      avgRating: rating ? Math.round((rating.sum / rating.count) * 10) / 10 : 0,
-      reviewCount: rating?.count ?? 0,
-    };
-  });
 }
 
 export function filterByService(suppliers: PublicSupplier[], dbType: string): PublicSupplier[] {

@@ -6,7 +6,7 @@ import Breadcrumbs from '@/components/seo/Breadcrumbs.astro';
 import TableOfContents from '@/components/blog/TableOfContents.astro';
 import RelatedPosts from '@/components/blog/RelatedPosts.astro';
 import ShareButtons from '@/components/blog/ShareButtons.astro';
-import NewsletterSignup from '@/components/blog/NewsletterSignup';
+import NewsletterSignup from '@/components/blog/NewsletterSignup.astro';
 import CTABlock from '@/components/layout/CTABlock.astro';
 import FreshnessSignal from '@/components/seo/FreshnessSignal.astro';
 import { getAllPublishedPosts, getRelatedPosts, extractHeadings, addHeadingIds, formatDateHe } from '@/lib/blog';
@@ -23,8 +23,6 @@ export const getStaticPaths = (async () => {
 
 const { post, related } = Astro.props;
 const siteUrl = import.meta.env.SITE_URL || 'https://eventflow.co.il';
-const supabaseUrl = import.meta.env.SUPABASE_URL;
-const supabaseKey = import.meta.env.SUPABASE_ANON_KEY;
 
 const sanitizedContent = sanitize(post.content);
 const contentWithIds = addHeadingIds(sanitizedContent);
@@ -97,6 +95,8 @@ const breadcrumbItems = [
       <img
         src={post.cover_image_url}
         alt={post.title}
+        width="960"
+        height="384"
         loading="eager"
         class="w-full rounded-xl mb-8 object-cover max-h-96"
       />
@@ -127,7 +127,7 @@ const breadcrumbItems = [
 
     <!-- Newsletter -->
     <div class="mt-12">
-      <NewsletterSignup client:visible supabaseUrl={supabaseUrl} supabaseKey={supabaseKey} />
+      <NewsletterSignup />
     </div>
 
     <!-- Related posts -->

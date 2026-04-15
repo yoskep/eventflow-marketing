@@ -3,7 +3,7 @@ import PageLayout from '@/layouts/PageLayout.astro';
 import SEOHead from '@/components/seo/SEOHead.astro';
 import Breadcrumbs from '@/components/seo/Breadcrumbs.astro';
 import CTABlock from '@/components/layout/CTABlock.astro';
-import { organizationSchema, softwareAppSchema } from '@/lib/seo';
+import { organizationSchema, softwareAppSchema, breadcrumbSchema, faqPageSchema } from '@/lib/seo';
 
 const appUrl = import.meta.env.APP_URL || 'https://app.eventflow.co.il';
 
@@ -12,6 +12,15 @@ const offers = [
   { name: 'Pro', price: '299', currency: 'ILS' },
   { name: 'Pro Plus', price: '499', currency: 'ILS' },
   { name: 'Agency', price: '1490', currency: 'ILS' },
+];
+
+const siteUrl = import.meta.env.SITE_URL || 'https://eventflow.co.il';
+
+const pricingFaqs = [
+  { question: 'האם יש תקופת ניסיון חינמית?', answer: 'כן, תוכנית Starter היא חינמית לחלוטין וכוללת עד 10 לידים ו-5 הצעות מחיר. תוכלו להתנסות במערכת ללא הגבלת זמן ולשדרג כשתרצו.' },
+  { question: 'האם אפשר לשנות או לבטל תוכנית?', answer: 'בהחלט. אפשר לשדרג, לשנות או לבטל תוכנית בכל רגע. שינויים נכנסים לתוקף בתחילת מחזור החיוב הבא. אין התחייבות לתקופה מינימלית.' },
+  { question: 'האם המחירים כוללים מע"מ?', answer: 'המחירים המוצגים אינם כוללים מע"מ (17%). המע"מ יתווסף בחשבונית.' },
+  { question: 'איזו תוכנית מתאימה לי?', answer: 'Starter מתאימה למתחילים שרוצים להתנסות. Pro מתאימה לספקי אירועים פעילים שמנהלים לידים, הצעות מחיר וחוזים. Pro Plus מתאימה לעסקים צומחים שרוצים AI ודוחות מתקדמים. Agency מיועדת לחברות הפקה עם צוות.' },
 ];
 
 const plans = [
@@ -63,7 +72,12 @@ const plans = [
     slot="head"
     title="מחירים — EventFlow"
     description='מחירי EventFlow — מערכת CRM לספקי אירועים. תוכנית חינמית להתחלה, תוכניות Pro למקצוענים. התחל בחינם היום.'
-    schemas={[organizationSchema(), softwareAppSchema(offers)]}
+    schemas={[
+      organizationSchema(),
+      softwareAppSchema(offers),
+      breadcrumbSchema([{ name: 'מחירים', url: `${siteUrl}/pricing` }]),
+      faqPageSchema(pricingFaqs),
+    ]}
   />
 
   <!-- Header -->
@@ -143,6 +157,26 @@ const plans = [
       </div>
 
       <p class="text-center text-sm text-gray-400 mt-8">* לא כולל מע"מ</p>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="py-12 sm:py-16" dir="rtl">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl sm:text-3xl font-bold text-brand-primary mb-8">שאלות נפוצות</h2>
+      <div class="space-y-4">
+        {pricingFaqs.map((faq) => (
+          <details class="group bg-white rounded-xl border border-gray-200 p-5">
+            <summary class="flex items-center justify-between cursor-pointer font-semibold text-brand-primary">
+              {faq.question}
+              <svg class="w-5 h-5 text-gray-400 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </summary>
+            <p class="mt-3 text-gray-600 leading-relaxed">{faq.answer}</p>
+          </details>
+        ))}
+      </div>
     </div>
   </section>
 

@@ -8,6 +8,7 @@ interface Props {
 
 const { class: className } = Astro.props;
 const gaId = import.meta.env.GA_MEASUREMENT_ID;
+const gscId = import.meta.env.GSC_VERIFICATION_ID;
 ---
 
 <!doctype html>
@@ -17,22 +18,15 @@ const gaId = import.meta.env.GA_MEASUREMENT_ID;
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0" />
     <meta name="theme-color" content="#1a2744" />
 
-    <!-- Google Search Console verification — uncomment and add your code -->
-    <!-- <meta name="google-site-verification" content="YOUR_VERIFICATION_CODE" /> -->
-    <!--
-      GSC Setup:
-      1. Go to https://search.google.com/search-console/
-      2. Add property → URL prefix → https://eventflow.co.il
-      3. Choose "HTML tag" verification method
-      4. Copy the content value and paste it above, then uncomment the meta tag
-      5. Deploy and click Verify in GSC
-    -->
+    {gscId && <meta name="google-site-verification" content={gscId} />}
 
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Heebo:wght@300;400;500;600;700;800&display=swap" />
 
     <link rel="icon" type="image/x-icon" href="/favicon.ico" />
     <link rel="apple-touch-icon" sizes="192x192" href="/icons/icon-192.png" />
+    <link rel="manifest" href="/manifest.json" />
 
     <slot name="head" />
 
@@ -49,6 +43,9 @@ const gaId = import.meta.env.GA_MEASUREMENT_ID;
     )}
   </head>
   <body class={`font-heebo bg-brand-cream text-brand-primary min-h-screen ${className ?? ''}`}>
+    <a href="#main-content" class="sr-only focus:not-sr-only focus:absolute focus:top-4 focus:right-4 focus:z-[60] focus:bg-white focus:px-4 focus:py-2 focus:rounded focus:shadow">
+      דלג לתוכן
+    </a>
     <slot />
     <TrackingEvents />
   </body>

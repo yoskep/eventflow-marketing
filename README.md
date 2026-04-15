@@ -1,171 +1,342 @@
-# EventFlow Marketing Site
+# EventFlow — אתר שיווקי
 
-Astro SSG marketing site for [EventFlow](https://eventflow.co.il) -- CRM for Israeli event suppliers.
+אתר שיווקי סטטי ל-[EventFlow](https://eventflow.co.il) — מערכת CRM לספקי אירועים בישראל.
 
-Deployed at `eventflow.co.il`. The CRM app lives separately at `app.eventflow.co.il`.
+כתובת האתר: **eventflow.co.il**
+כתובת האפליקציה (פרויקט נפרד): **app.eventflow.co.il** (EventFlow-Saas)
 
-## Stack
+---
 
-- **Astro 6** (Static Site Generation)
-- **React 19** (islands for interactive components)
-- **Tailwind CSS 4**
-- **Supabase** (build-time data fetching)
-- **@astrojs/sitemap** + **@astrojs/rss**
+## מה יש באתר?
 
-## Pages
+| חלק | כמות דפים | הסבר |
+|-----|-----------|-------|
+| דפים ראשיים | 6 | דף נחיתה, מחירים, אודות, פרטיות, תנאי שימוש, נגישות |
+| בלוג | דינמי | מאמרים מ-Supabase, קטגוריות, RSS |
+| דפי SEO (pSEO) | ~850 | 17 שירותים x ~50 ערים (למשל "צלם באשדוד") |
+| דפי שירות | 17 | דף לכל סוג ספק |
+| דפי ערים | ~50 | דף לכל עיר/אזור |
+| פרופילי ספקים | דינמי | דף לכל ספק ציבורי |
+| **סה"כ** | **~838** | נבנים אוטומטית ב-build |
 
-| Section | Count | Description |
-|---------|-------|-------------|
-| Static pages | 6 | Landing, Pricing, About, Privacy, Terms, Accessibility |
-| Blog | dynamic | Paginated index, articles, category filters, RSS |
-| Programmatic SEO | ~895 | 17 services x ~50 cities |
-| Service index | 17 | One per service type |
-| City landing | ~50 | One per city/region |
-| Supplier profiles | dynamic | One per public supplier |
+### תכונות SEO
 
-## Setup
+- HTML סטטי לחלוטין (אפס JavaScript בדפי תוכן)
+- Structured Data (JSON-LD): Organization, WebSite, Article, LocalBusiness, FAQPage, Service, BreadcrumbList, SoftwareApplication
+- Sitemap XML אוטומטי
+- פיד RSS ב-`/rss.xml`
+- Open Graph + Twitter Card בכל דף
+- הנחיות לבוטי AI ב-robots.txt (Google, ChatGPT, Claude, Perplexity, Apple Intelligence)
+- תוכן ידידותי ל-AI (AnswerBlock, FreshnessSignal)
+- רשת קישורים פנימיים בין דפי שירות/עיר/בלוג
+- עברית RTL מלאה
+- מעקב אירועים ב-GA4
+
+---
+
+## שלב 1 — התקנה מקומית
+
+### מה צריך
+
+1. **Node.js 22 ומעלה** — [הורד מכאן](https://nodejs.org/en/download)
+   - אחרי ההתקנה, פתח Terminal וכתוב `node -v` כדי לוודא
+2. **Git** — [הורד מכאן](https://git-scm.com/downloads)
+
+### התקנה
 
 ```bash
+# שכפול הפרויקט
+git clone <repo-url>
+cd eventflow-marketing
+
+# התקנת dependencies
 npm install
+
+# העתקת קובץ הגדרות
 cp .env.example .env
-# Fill in your Supabase credentials
 ```
 
-## Development
+### מילוי קובץ .env
+
+פתח את `.env` בעורך טקסט:
+
+```bash
+# חובה — בלי זה האתר לא ייבנה עם תוכן דינמי
+SUPABASE_URL="https://ctadwezlkhwjqsdqkymu.supabase.co"
+SUPABASE_ANON_KEY="your-anon-key-here"
+
+# כתובות האתרים
+SITE_URL="https://eventflow.co.il"
+APP_URL="https://app.eventflow.co.il"
+
+# אופציונלי — הגדר מאוחר יותר
+GA_MEASUREMENT_ID=""
+GSC_VERIFICATION_ID=""
+```
+
+**איפה מוצאים את ה-anon key?**
+1. כנס ל-[Supabase Dashboard](https://supabase.com/dashboard)
+2. בחר את הפרויקט
+3. **Settings** > **API** > העתק את **anon public** key
+
+### הרצה מקומית
 
 ```bash
 npm run dev
 ```
 
-## Build
+האתר ייפתח בכתובת **http://localhost:4321**
+
+> שים לב: אם Supabase לא נגיש, האתר עדיין ייבנה — פשוט בלי דפי בלוג וספקים (הם יופיעו כשה-DB יהיה פעיל)
+
+---
+
+## שלב 2 — העלאה לאוויר
+
+### 2.1 בחירת פלטפורמה
+
+| פלטפורמה | מחיר | יתרון | קישור |
+|-----------|-------|-------|--------|
+| **Vercel** (מומלץ) | חינם | הכי קל, מהיר, תמיכה ב-Astro | [vercel.com](https://vercel.com) |
+| **Netlify** | חינם | פופולרי, פשוט | [netlify.com](https://www.netlify.com) |
+| **Cloudflare Pages** | חינם | הכי זול בסקייל | [pages.cloudflare.com](https://pages.cloudflare.com) |
+
+### 2.2 פריסה ב-Vercel (מומלץ)
+
+**שלב 1 — הרשמה**
+1. כנס ל-[vercel.com](https://vercel.com)
+2. לחץ **Sign Up** > **Continue with GitHub**
+3. אשר גישה ל-GitHub
+
+**שלב 2 — יצירת פרויקט**
+1. לחץ **Add New Project**
+2. בחר את ה-repository `eventflow-marketing`
+3. הגדרות:
+   - **Framework Preset**: Astro
+   - **Build Command**: `npm run build`
+   - **Output Directory**: `dist`
+
+**שלב 3 — הוספת Environment Variables**
+
+לחץ על **Environment Variables** והוסף:
+
+| שם | ערך |
+|----|-----|
+| `SUPABASE_URL` | `https://ctadwezlkhwjqsdqkymu.supabase.co` |
+| `SUPABASE_ANON_KEY` | (ה-anon key שלך) |
+| `SITE_URL` | `https://eventflow.co.il` |
+| `APP_URL` | `https://app.eventflow.co.il` |
+
+**שלב 4 — Deploy!**
+
+לחץ **Deploy** וחכה כדקה. Vercel ייתן לך כתובת זמנית (כמו `eventflow-marketing.vercel.app`).
+
+### 2.3 חיבור דומיין eventflow.co.il
+
+1. ב-Vercel: **Settings > Domains > Add**
+2. הקלד `eventflow.co.il`
+3. Vercel ייתן לך רשומות DNS — העתק אותן
+4. כנס לספק הדומיין שלך:
+   - **[Cloudflare](https://dash.cloudflare.com)** — DNS > Add Record
+   - **[GoDaddy](https://dcc.godaddy.com)** — DNS Management
+   - **[Namecheap](https://ap.www.namecheap.com)** — Advanced DNS
+5. הוסף את הרשומות:
+   - **Type**: A (או CNAME)
+   - **Name**: `@` (עבור eventflow.co.il) או `www`
+   - **Value**: הערך ש-Vercel נתן
+6. חכה עד 24 שעות (בד"כ 5-30 דקות)
+
+### 2.4 הגדרת HTTPS
+
+Vercel מגדיר HTTPS אוטומטית עם Let's Encrypt. אין מה לעשות.
+
+---
+
+## שלב 3 — הגדרת Google (אנליטיקס + Search Console)
+
+### 3.1 Google Analytics (מעקב תנועה)
+
+**למה צריך?** כדי לדעת כמה אנשים נכנסים לאתר, מאיפה הם מגיעים, ואיפה הם יוצאים.
+
+1. כנס ל-[analytics.google.com](https://analytics.google.com)
+2. לחץ **Admin** (גלגל שיניים) > **Create Property**
+3. מלא שם: `EventFlow` > Next
+4. בחר **Business objectives** > Next
+5. בחר **Web** > הקלד `eventflow.co.il`
+6. **העתק את ה-Measurement ID** (נראה ככה: `G-XXXXXXXXXX`)
+7. חזור ל-Vercel > **Settings > Environment Variables**
+8. הוסף: `GA_MEASUREMENT_ID` = `G-XXXXXXXXXX`
+9. **Redeploy** (Settings > Deployments > שלוש נקודות > Redeploy)
+
+### 3.2 Google Search Console (הופעה בגוגל)
+
+**למה צריך?** כדי שגוגל יכיר את האתר, יסרוק אותו, ויציג אותו בתוצאות חיפוש.
+
+1. כנס ל-[search.google.com/search-console](https://search.google.com/search-console)
+2. לחץ **Add Property** > **URL prefix** > הקלד `https://eventflow.co.il`
+3. בחר שיטת אימות **HTML tag**
+4. **העתק רק את ה-content** מתוך ה-meta tag (הערך בין המרכאות)
+5. חזור ל-Vercel > **Environment Variables**
+6. הוסף: `GSC_VERIFICATION_ID` = (הערך שהעתקת)
+7. **Redeploy**
+8. חזור ל-Google Search Console ולחץ **Verify**
+9. אחרי אימות, שלח את ה-sitemap:
+   - לחץ **Sitemaps** בתפריט השמאלי
+   - הקלד `sitemap-index.xml` > **Submit**
+
+---
+
+## שלב 4 — עדכון אוטומטי (Rebuild Webhook)
+
+כל פעם שמוסיפים מאמר בבלוג או ספק חדש נרשם, צריך לבנות מחדש את האתר כדי שהתוכן יופיע. אפשר לעשות את זה אוטומטית:
+
+### 4.1 יצירת Deploy Hook ב-Vercel
+
+1. ב-Vercel: **Settings > Git > Deploy Hooks**
+2. לחץ **Create Hook**
+3. שם: `supabase-content-update`
+4. ענף: `main`
+5. **העתק את ה-URL** שנוצר
+
+### 4.2 חיבור ל-Supabase
+
+1. כנס ל-[Supabase Dashboard](https://supabase.com/dashboard) > **Database > Webhooks**
+2. לחץ **Create Webhook**
+3. הגדרות:
+   - **Name**: `rebuild-on-blog-update`
+   - **Table**: `blog_posts`
+   - **Events**: INSERT, UPDATE
+   - **Type**: HTTP Request
+   - **URL**: (ה-Deploy Hook URL מ-Vercel)
+   - **Method**: POST
+4. לחץ **Create**
+5. חזור על התהליך עבור טבלת `suppliers` (כדי שפרופילים חדשים יופיעו)
+
+עכשיו כל פעם שתפרסם מאמר חדש באפליקציה — האתר ייבנה מחדש אוטומטית תוך כדקה.
+
+---
+
+## שלב 5 — ניהול תוכן
+
+### בלוג
+
+מאמרים נכתבים **באפליקציה** (app.eventflow.co.il) ומופיעים אוטומטית באתר.
+
+1. כנס לאפליקציה > **ניהול בלוג**
+2. לחץ **מאמר חדש**
+3. כתוב כותרת, תוכן, בחר קטגוריה
+4. לחץ **פרסם**
+5. האתר ייבנה מחדש אוטומטית (אם הגדרת Webhook)
+
+### פרופילי ספקים
+
+ספקים שנרשמים באפליקציה ומשלימים onboarding מקבלים דף פרופיל ציבורי אוטומטית.
+
+### דפי SEO
+
+דפי ה-SEO (כמו "צלם בתל אביב") נבנים אוטומטית מהנתונים. אין צורך לערוך אותם ידנית.
+
+---
+
+## שלב 6 — תחזוקה
+
+### פקודות שימושיות
 
 ```bash
-npm run build
-npm run preview
+npm run dev       # שרת פיתוח (localhost:4321)
+npm run build     # בניית כל 838+ הדפים
+npm run preview   # צפייה מקומית בגרסה שנבנתה
+npm run lint      # בדיקת שגיאות קוד
+npm run format    # סידור אוטומטי של הקוד
 ```
+
+### עדכון תוכן
+
+| מה לעדכן | איפה |
+|-----------|------|
+| מחירי מנויים | `src/pages/pricing.astro` |
+| שאלות נפוצות | `src/data/faqs.ts` |
+| מידע על החברה | `src/pages/about.astro` |
+| פרטיות ותנאים | `src/pages/privacy.astro`, `src/pages/terms.astro` |
+| נגישות | `src/pages/accessibility.astro` |
+| רובוטים/AI | `public/robots.txt` |
+
+### בדיקת ביצועים
+
+- [Google PageSpeed Insights](https://pagespeed.web.dev/) — הקלד `eventflow.co.il`
+- [Google Search Console](https://search.google.com/search-console) — בדוק שגיאות סריקה
+- [Ahrefs Free Tools](https://ahrefs.com/free-seo-tools) — בדיקת SEO בסיסית
 
 ---
 
-## Before First Deploy -- Checklist
-
-### 1. Apply Database Migration
-
-Run this SQL in your [Supabase dashboard](https://supabase.com/dashboard) SQL editor:
-
-```sql
-ALTER TABLE blog_posts ADD COLUMN IF NOT EXISTS category TEXT DEFAULT 'general';
-ALTER TABLE blog_posts ADD COLUMN IF NOT EXISTS tags TEXT[] DEFAULT '{}';
-
-CREATE TABLE IF NOT EXISTS newsletter_subscribers (
-  id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
-  email TEXT UNIQUE NOT NULL,
-  subscribed_at TIMESTAMPTZ DEFAULT now(),
-  unsubscribed_at TIMESTAMPTZ,
-  source TEXT DEFAULT 'blog'
-);
-
-ALTER TABLE newsletter_subscribers ENABLE ROW LEVEL SECURITY;
-
-CREATE POLICY "Anyone can subscribe"
-  ON newsletter_subscribers FOR INSERT WITH CHECK (true);
-
-CREATE POLICY "Authenticated users can read subscribers"
-  ON newsletter_subscribers FOR SELECT USING (auth.role() = 'authenticated');
-```
-
-### 2. Set Up DNS
-
-| Domain | Points to |
-|--------|-----------|
-| `eventflow.co.il` | Astro site (Vercel/Netlify/Cloudflare Pages) |
-| `app.eventflow.co.il` | Vite CRM app (current hosting) |
-
-### 3. Deploy to Hosting
-
-Choose one and connect this repo:
-
-- **Vercel**: `npx vercel` or connect via dashboard
-- **Netlify**: `npx netlify deploy` or connect via dashboard
-- **Cloudflare Pages**: connect via dashboard
-
-Build command: `npm run build`
-Output directory: `dist`
-
-### 4. Google Search Console
-
-1. Go to [Google Search Console](https://search.google.com/search-console)
-2. Add property: `eventflow.co.il`
-3. Copy the verification meta tag
-4. Uncomment and paste in `src/layouts/BaseLayout.astro` (search for `google-site-verification`)
-5. Rebuild and deploy
-6. Submit sitemap: `https://eventflow.co.il/sitemap-index.xml`
-
-### 5. GA4 Analytics
-
-1. Create a GA4 property at [Google Analytics](https://analytics.google.com)
-2. Copy the Measurement ID (G-XXXXXXX)
-3. Add `GA_MEASUREMENT_ID=G-XXXXXXX` to your `.env` file
-4. Rebuild and deploy
-
-### 6. OG Image
-
-Replace `public/images/og-default.png` with a branded 1200x630 image for social media previews.
-
-### 7. Supabase Rebuild Webhook
-
-Set up automatic rebuilds when content changes:
-
-1. In Supabase dashboard, go to Database > Webhooks
-2. Create webhook for `blog_posts` table (INSERT, UPDATE)
-3. Point to your hosting deploy hook URL:
-   - Vercel: Settings > Git > Deploy Hooks
-   - Netlify: Site settings > Build & deploy > Build hooks
-4. Create another webhook for `suppliers` table
-
-### 8. Update CRM App Auth Links
-
-In the Vite CRM app, update login/signup redirects to use `app.eventflow.co.il`.
-
-### 9. Mobile Navigation
-
-Add a hamburger menu to `src/components/layout/Header.astro` for mobile users (nav links are hidden on mobile currently).
-
----
-
-## Environment Variables
-
-| Variable | Description |
-|----------|-------------|
-| `SUPABASE_URL` | Supabase project URL |
-| `SUPABASE_ANON_KEY` | Supabase anonymous key |
-| `SITE_URL` | Marketing site URL (`https://eventflow.co.il`) |
-| `APP_URL` | CRM app URL (`https://app.eventflow.co.il`) |
-| `GA_MEASUREMENT_ID` | Google Analytics 4 Measurement ID |
-
-## Architecture
+## ארכיטקטורה
 
 ```
-eventflow.co.il (this repo)         app.eventflow.co.il (Vite SPA)
+eventflow.co.il (האתר הזה)         app.eventflow.co.il (האפליקציה)
 +--------------------------+        +--------------------------+
-| Landing, Pricing, Legal  |        | Dashboard, Leads, Quotes |
-| Blog (SSG from Supabase) |        | Blog Admin (editor)      |
-| /biz/:slug (profiles)    | -auth> | Contracts, Payments      |
-| /{service}/{city} (pSEO) |        | Settings, Galleries      |
+| דף נחיתה, מחירים, חוקי  |        | דשבורד, לידים, הצעות    |
+| בלוג (מ-Supabase)       |        | עורך בלוג (admin)        |
+| פרופילי ספקים            | ←→     | חוזים, תשלומים           |
+| דפי SEO (850+ עמודים)   |        | הגדרות, גלריות           |
 | Sitemaps, RSS, robots    |        |                          |
 +--------------------------+        +--------------------------+
          |                                   |
-         +------- Supabase (shared) ---------+
+         +------- Supabase (משותף) ----------+
 ```
 
-## SEO Features
+שני הפרויקטים משתמשים באותו בסיס נתונים Supabase. האתר השיווקי שולף נתונים **ב-build time** (בזמן הבנייה). האפליקציה שולפת **בזמן אמת**.
 
-- Pre-rendered HTML (zero client-side JS for content pages)
-- JSON-LD structured data: Organization, WebSite, Article, LocalBusiness, FAQPage, Service, BreadcrumbList, SoftwareApplication, ItemList
-- XML sitemaps (auto-generated)
-- RSS feed at `/rss.xml`
-- Open Graph + Twitter Card meta on every page
-- AI crawler directives in robots.txt (GPTBot, PerplexityBot, ClaudeBot)
-- AI-friendly content patterns (AnswerBlock, FreshnessSignal)
-- Internal linking mesh across service/city/blog pages
-- Hebrew RTL throughout (`lang="he" dir="rtl"`)
-- GA4 event tracking (CTA clicks, scroll depth, social shares)
+---
+
+## מבנה הפרויקט
+
+```
+src/
+├── components/
+│   ├── blog/           # רכיבי בלוג (כרטיס, ניוזלטר, שיתוף)
+│   ├── landing/        # דף נחיתה (Hero, Features, Stats)
+│   ├── layout/         # Header, Footer, CTA, Mobile CTA
+│   ├── seo/            # SEO Head, Breadcrumbs, Schema
+│   └── suppliers/      # כרטיס ספק
+├── data/
+│   ├── cities.ts       # רשימת 50+ ערים
+│   ├── services.ts     # 17 סוגי שירות
+│   └── faqs.ts         # שאלות נפוצות לפי שירות
+├── layouts/            # תבניות (דף, בלוג)
+├── lib/                # Supabase client, SEO schemas, blog utils
+├── pages/              # כל הדפים (Astro routing)
+│   ├── blog/           # בלוג + RSS
+│   ├── [service]/      # דפי שירות + עיר (pSEO)
+│   ├── biz/            # פרופילי ספקים
+│   └── cities/         # דפי ערים
+├── styles/             # CSS גלובלי
+└── public/             # קבצים סטטיים (icons, manifest, robots)
+```
+
+---
+
+## שאלות נפוצות
+
+**ש: למה ה-build מציג "Failed to fetch suppliers"?**
+ת: זה קורה כש-Supabase לא נגיש. האתר עדיין ייבנה — רק ללא דפי בלוג וספקים. ודא שה-Supabase project פעיל וה-anon key נכון.
+
+**ש: איך מעדכנים את רשימת הערים?**
+ת: ערוך את `src/data/cities.ts` — הוסף/הסר ערים. אחרי build יווצרו דפים חדשים אוטומטית.
+
+**ש: איך מוסיפים סוג שירות חדש?**
+ת: ערוך את `src/data/services.ts` ו-`src/data/faqs.ts` — הוסף שירות + שאלות נפוצות. דפי pSEO חדשים ייווצרו אוטומטית.
+
+**ש: כמה זמן לוקח build?**
+ת: בערך שנייה אחת ל-838 דפים. Astro SSG מהיר מאוד.
+
+**ש: צריך להריץ build אחרי כל שינוי?**
+ת: רק עבור שינויי קוד. שינויי תוכן מ-Supabase (בלוג, ספקים) ייבנו אוטומטית דרך ה-webhook.
+
+**ש: האתר עובד בלי JavaScript?**
+ת: כן! כל דפי התוכן הם HTML סטטי. JavaScript נטען רק עבור אינטראקציות (ניוזלטר, מנו נייד).
+
+---
+
+## רישיון
+
+פרטי — כל הזכויות שמורות.
