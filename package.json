@@ -30,6 +30,6 @@
     "eslint-plugin-astro": "^1.7.0",
     "prettier": "^3.8.3",
     "tailwindcss": "^4.2.2",
-    "typescript": "^5.9.3"
+    "typescript": "^6.0.3"
   }
 }
