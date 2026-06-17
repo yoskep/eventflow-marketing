@@ -1,0 +1,187 @@
+---
+// src/components/analytics/CookieConsent.astro
+// Cookie consent banner for Israeli Privacy Protection Law (Amendment 13) compliance.
+// Gates GA4 via Google Consent Mode v2 (default-denied).
+// Choice is persisted in localStorage + a companion cookie (12-month TTL).
+// Requires GA_MEASUREMENT_ID to be set (same env var as BaseLayout).
+---
+
+<!-- Cookie Consent Banner -->
+<div
+  id="cookie-consent-banner"
+  role="dialog"
+  aria-modal="true"
+  aria-labelledby="cookie-consent-title"
+  aria-describedby="cookie-consent-desc"
+  dir="rtl"
+  class="cookie-consent-banner hidden fixed bottom-0 right-0 left-0 z-50 p-4 sm:p-6 bg-brand-primary text-white shadow-2xl border-t border-white/20"
+>
+  <div class="max-w-5xl mx-auto">
+    <div class="flex flex-col sm:flex-row sm:items-start gap-4">
+      <div class="flex-1">
+        <h2 id="cookie-consent-title" class="text-base font-semibold mb-1">שימוש בעוגיות</h2>
+        <p id="cookie-consent-desc" class="text-sm text-gray-300 leading-relaxed">
+          אנחנו משתמשים בעוגיות אנליטיקה (Google Analytics) כדי להבין כיצד המבקרים משתמשים באתר ולשפר את השירות.
+          עוגיות חיוניות (כניסה, אבטחה) פועלות תמיד ואינן מצריכות הסכמה.
+          <a href="/privacy" class="underline hover:text-brand-gold ml-1">מדיניות פרטיות</a>
+        </p>
+      </div>
+      <div class="flex flex-row sm:flex-col gap-2 shrink-0">
+        <button
+          id="cookie-reject-btn"
+          class="flex-1 sm:flex-none px-4 py-2 text-sm font-medium border border-white/40 rounded hover:border-white hover:bg-white/10 transition-colors"
+          aria-label="דחה עוגיות אנליטיקה"
+        >
+          דחה
+        </button>
+        <button
+          id="cookie-accept-btn"
+          class="flex-1 sm:flex-none px-4 py-2 text-sm font-medium border border-white/40 rounded hover:border-white hover:bg-white/10 transition-colors"
+          aria-label="אשר עוגיות אנליטיקה"
+        >
+          אשר
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+  // ---- Consent store -------------------------------------------------------
+  const CONSENT_KEY = 'ef_cookie_consent_v1';
+  const CONSENT_COOKIE = 'ef_consent';
+  const CONSENT_TTL_MS = 365 * 24 * 60 * 60 * 1000; // 12 months
+
+  type ConsentChoice = 'accepted' | 'rejected';
+
+  interface ConsentRecord {
+    choice: ConsentChoice;
+    ts: number; // epoch ms
+  }
+
+  function readConsent(): ConsentRecord | null {
+    try {
+      const raw = localStorage.getItem(CONSENT_KEY);
+      if (!raw) return null;
+      const rec = JSON.parse(raw) as ConsentRecord;
+      // Re-prompt after 12 months
+      if (Date.now() - rec.ts > CONSENT_TTL_MS) {
+        localStorage.removeItem(CONSENT_KEY);
+        return null;
+      }
+      return rec;
+    } catch {
+      return null;
+    }
+  }
+
+  function writeConsent(choice: ConsentChoice): void {
+    const rec: ConsentRecord = { choice, ts: Date.now() };
+    try {
+      localStorage.setItem(CONSENT_KEY, JSON.stringify(rec));
+    } catch { /* quota exceeded – best effort */ }
+    // Companion cookie for SSR reads
+    const maxAge = Math.floor(CONSENT_TTL_MS / 1000);
+    const secure = location.protocol === 'https:' ? '; Secure' : '';
+    const val = choice === 'accepted' ? '1' : '0';
+    document.cookie = `${CONSENT_COOKIE}=${val}; Path=/; Max-Age=${maxAge}; SameSite=Lax${secure}`;
+  }
+
+  // ---- Google Consent Mode helpers -----------------------------------------
+  // gtag() is already bootstrapped by BaseLayout with default-denied for analytics
+  // We only update it here on explicit user action.
+  function grantAnalyticsConsent(): void {
+    if (typeof window.gtag === 'function') {
+      window.gtag('consent', 'update', {
+        analytics_storage: 'granted',
+        ad_storage: 'denied',
+        ad_user_data: 'denied',
+        ad_personalization: 'denied',
+      });
+    }
+    // Fire audit event (essential — allowed before consent)
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', 'consent_accepted');
+    }
+  }
+
+  function denyAnalyticsConsent(): void {
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', 'consent_rejected');
+    }
+    // analytics_storage stays denied — already the default
+  }
+
+  // ---- DOM -----------------------------------------------------------------
+  const banner = document.getElementById('cookie-consent-banner');
+  const acceptBtn = document.getElementById('cookie-accept-btn');
+  const rejectBtn = document.getElementById('cookie-reject-btn');
+
+  function hideBanner(): void {
+    if (banner) {
+      banner.classList.add('hidden');
+    }
+  }
+
+  function showBanner(): void {
+    if (banner) {
+      banner.classList.remove('hidden');
+    }
+  }
+
+  function handleAccept(): void {
+    writeConsent('accepted');
+    grantAnalyticsConsent();
+    hideBanner();
+  }
+
+  function handleReject(): void {
+    writeConsent('rejected');
+    denyAnalyticsConsent();
+    hideBanner();
+  }
+
+  // ESC = reject (GDPR/Amendment 13 dismissal-as-refusal pattern)
+  function handleKey(e: KeyboardEvent): void {
+    if (e.key === 'Escape') handleReject();
+  }
+
+  // Init
+  const existing = readConsent();
+  if (existing) {
+    // Already decided — honour previous choice, don't show banner
+    if (existing.choice === 'accepted') {
+      grantAnalyticsConsent();
+    }
+  } else {
+    // No prior choice — show banner
+    showBanner();
+    window.addEventListener('keydown', handleKey);
+  }
+
+  acceptBtn?.addEventListener('click', handleAccept);
+  rejectBtn?.addEventListener('click', handleReject);
+
+  // Cross-tab sync — if user decides in another tab, hide this one
+  window.addEventListener('storage', (e: StorageEvent) => {
+    if (e.key === CONSENT_KEY && e.newValue) {
+      try {
+        const rec = JSON.parse(e.newValue) as ConsentRecord;
+        if (rec.choice === 'accepted') grantAnalyticsConsent();
+        hideBanner();
+      } catch { /* ignore */ }
+    }
+  });
+
+  // Expose a global to let the footer "reopen preferences" link trigger the banner
+  // (withdrawal of consent — must be as easy as granting, per Amendment 13 Art. 8C)
+  (window as unknown as Record<string, unknown>).__efReopenConsent = (): void => {
+    localStorage.removeItem(CONSENT_KEY);
+    document.cookie = `${CONSENT_COOKIE}=; Path=/; Max-Age=0; SameSite=Lax`;
+    showBanner();
+    window.addEventListener('keydown', handleKey);
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', 'consent_reopened');
+    }
+  };
+</script>

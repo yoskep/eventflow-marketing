@@ -1,360 +1,258 @@
-# EventFlow — אתר שיווקי
+# eventflow-marketing
 
-אתר שיווקי סטטי ל-[EventFlow](https://eventflow.co.il) — מערכת CRM לספקי אירועים בישראל.
+**אתר שיווקי + מדריך ספקים פרוגרמטי ל-EventFlow — מערכת CRM לספקי אירועים בישראל**
 
-כתובת האתר: **eventflow.co.il**
-כתובת האפליקציה (פרויקט נפרד): **app.eventflow.co.il** (EventFlow-Saas)
-
----
-
-## מה יש באתר?
-
-| חלק | כמות דפים | הסבר |
-|-----|-----------|-------|
-| דפים ראשיים | 6 | דף נחיתה, מחירים, אודות, פרטיות, תנאי שימוש, נגישות |
-| בלוג | דינמי | מאמרים מ-Supabase, קטגוריות, RSS |
-| דפי SEO (pSEO) | ~850 | 17 שירותים x ~50 ערים (למשל "צלם באשדוד") |
-| דפי שירות | 17 | דף לכל סוג ספק |
-| דפי ערים | ~50 | דף לכל עיר/אזור |
-| פרופילי ספקים | דינמי | דף לכל ספק ציבורי |
-| **סה"כ** | **~838** | נבנים אוטומטית ב-build |
-
-### תכונות SEO
-
-- HTML סטטי לחלוטין (אפס JavaScript בדפי תוכן)
-- Structured Data (JSON-LD): Organization, WebSite, Article, LocalBusiness, FAQPage, Service, BreadcrumbList, SoftwareApplication
-- Sitemap XML אוטומטי
-- פיד RSS ב-`/rss.xml`
-- Open Graph + Twitter Card בכל דף
-- הנחיות לבוטי AI ב-robots.txt (Google, ChatGPT, Claude, Perplexity, Apple Intelligence)
-- תוכן ידידותי ל-AI (AnswerBlock, FreshnessSignal)
-- רשת קישורים פנימיים בין דפי שירות/עיר/בלוג
-- עברית RTL מלאה
-- מעקב אירועים ב-GA4
+Static marketing website and programmatic-SEO vendor directory for [EventFlow](https://eventflow.co.il) — the Hebrew/RTL CRM platform for Israeli event suppliers. Generates ~838 pages at build time using Astro SSG.
 
 ---
 
-## שלב 1 — התקנה מקומית
+## What it is
 
-### מה צריך
+`eventflow-marketing` is the public-facing site for EventFlow (`eventflow.co.il`). It is a **fully static Astro site** (zero client-side JS for content pages) that serves three purposes:
 
-1. **Node.js 22 ומעלה** — [הורד מכאן](https://nodejs.org/en/download)
-   - אחרי ההתקנה, פתח Terminal וכתוב `node -v` כדי לוודא
-2. **Git** — [הורד מכאן](https://git-scm.com/downloads)
+1. **Marketing** — landing page, pricing, about, legal pages (privacy/terms/accessibility)
+2. **Blog** — articles fetched from Supabase at build time, with category pages and RSS feed
+3. **Programmatic-SEO vendor directory** — ~838 pre-rendered Hebrew pages covering `/biz/[slug]` supplier profiles, `/[service]` + `/[service]/[city]` service-city intersections, and `/cities/[city]` city hubs, all with JSON-LD schema markup and internal-linking mesh
 
-### התקנה
+The app itself (dashboards, lead management, contracts) lives in a separate project at `app.eventflow.co.il`. Both share the same Supabase database; this site reads it **only at build time**.
+
+---
+
+## Tech stack
+
+| Layer | Technology |
+|---|---|
+| Framework | Astro 6 (static output) |
+| Styling | Tailwind CSS 4 (Vite plugin) |
+| Language | TypeScript 6 |
+| Data layer | Supabase JS v2 (build-time fetch only) |
+| Fonts | Google Fonts — Heebo (Hebrew RTL) |
+| Sitemap | `@astrojs/sitemap` |
+| RSS | `@astrojs/rss` |
+| Analytics | Google Analytics 4 via Consent Mode v2 |
+| Node requirement | ≥ 22.12.0 |
+
+---
+
+## Features
+
+### Landing page
+Hero section, features grid, how-it-works steps, pain points, stats bar, and CTA blocks — all in Hebrew RTL.
+
+### Pricing page (`/pricing`)
+Four plans with **VAT-inclusive prices at 18%** (Starter free / Pro ₪353 / Pro Plus ₪589 / Agency ₪1,758 per month). Prices are displayed with the footnote "* כל המחירים כוללים מע"מ (18%)". Agency plan features include "(בקרוב)" labels on unbuilt items (team management, API access). Pricing FAQ with JSON-LD `FAQPage` schema.
+
+### Blog
+Articles and categories fetched from Supabase at build time. Components: `BlogPostCard`, `CategoryPills`, `TableOfContents`, `RelatedPosts`, `ReadingProgress`, `ShareButtons`, `NewsletterSignup`. Paginated listing at `/blog/[...page]` and category pages at `/blog/category/[category]`. RSS feed at `/rss.xml`.
+
+### Programmatic SEO
+- **`/biz/[slug]`** — one page per public supplier. CTA: WhatsApp quote request (if phone available), supplier website (fallback), or eventflow.co.il root (last resort). No `/request-quote` route is used.
+- **`/[service]`** — index page per service type (17 services defined in `src/data/services.ts`)
+- **`/[service]/[city]`** — service × city intersection pages (~850 combinations)
+- **`/cities/[city]`** — city hub pages
+
+### JSON-LD schema markup
+`Organization`, `WebSite`, `WebPage`, `Article`, `LocalBusiness` subtypes (via `localBusinessSchema`), `FAQPage`, `BreadcrumbList`, `SoftwareApplication` with `Offer` pricing. Implemented in `src/lib/seo.ts` and injected via `src/components/seo/SEOHead.astro` + `SchemaOrg.astro`.
+
+### llms.txt
+`public/llms.txt` — describes EventFlow for AI answer engines (ChatGPT, Claude, Perplexity, Apple Intelligence).
+
+> **Note:** `llms.txt` currently shows pre-VAT prices (₪299/₪499/₪1,490) which differ from the live pricing page (₪353/₪589/₪1,758 VAT-inclusive). Update before launch or add an explicit "excluding VAT" note.
+
+### Cookie consent — Consent Mode v2
+`src/components/analytics/CookieConsent.astro` implements a Hebrew RTL banner (Amendment 13 compliant). GA4 defaults to `analytics_storage: denied` in `BaseLayout.astro` before user decision. The banner updates consent on explicit accept/reject; ESC triggers reject. Choice persists 12 months in `localStorage` + companion cookie. GA4 script is only active when `GA_MEASUREMENT_ID` is set.
+
+### Legal pages
+| Page | Key detail |
+|---|---|
+| `/privacy` | Amendment 13 update (effective 14 Aug 2025), 72-hour breach notification, cookie consent flow. Marked **"טיוטה — לאישור עו"ד"**. |
+| `/terms` | Section 7: 14-day cooling-off period under Israeli Consumer Protection Law; extended 4-month right for protected groups (Amendment 47). Draft banner present. Marked **"טיוטה — לאישור עו"ד"**. |
+| `/accessibility` | WCAG 2.1 AA / Israeli standard ת"י 5568. Phone number placeholder is intentionally omitted (comment in source) pending a real number. |
+
+### Other
+- `src/components/pseo/SupplierCard.astro` — displays Hebrew `serviceLabel` (from `getServiceByDbType`) and city badge
+- `FreshnessSignal`, `AnswerBlock`, `Breadcrumbs` for AI-friendliness and structured UX
+- `InternalLinks`, `CityGrid`, `ServiceGrid` for SEO mesh
+- `public/robots.txt` with bot directives for Google, ChatGPT, Claude, Perplexity, Apple Intelligence
+
+---
+
+## Getting started
+
+### Prerequisites
+
+- Node.js ≥ 22.12.0
+- npm
+
+### Install
 
 ```bash
-# שכפול הפרויקט
 git clone <repo-url>
 cd eventflow-marketing
-
-# התקנת dependencies
 npm install
-
-# העתקת קובץ הגדרות
-cp .env.example .env
 ```
 
-### מילוי קובץ .env
+### Environment variables
 
-פתח את `.env` בעורך טקסט:
+Create a `.env` file at the project root. The build succeeds **without Supabase variables** — supplier and blog pages simply render empty (no crash).
 
-```bash
-# חובה — בלי זה האתר לא ייבנה עם תוכן דינמי
-SUPABASE_URL="https://ctadwezlkhwjqsdqkymu.supabase.co"
-SUPABASE_ANON_KEY="your-anon-key-here"
+| Variable | Required | Description |
+|---|---|---|
+| `SITE_URL` | Optional | Canonical site URL. Default: `https://eventflow.co.il` |
+| `APP_URL` | Optional | App URL used for signup/plan CTA links. Default: `https://app.eventflow.co.il` |
+| `SUPABASE_URL` | Optional* | Supabase project URL for build-time data fetch |
+| `SUPABASE_ANON_KEY` | Optional* | Supabase anon/public key |
+| `GA_MEASUREMENT_ID` | Optional | Google Analytics 4 Measurement ID (`G-XXXXXXXXXX`). GA is disabled entirely when unset. |
+| `GSC_VERIFICATION_ID` | Optional | Google Search Console HTML tag verification value |
 
-# כתובות האתרים
-SITE_URL="https://eventflow.co.il"
-APP_URL="https://app.eventflow.co.il"
+*Without `SUPABASE_URL` + `SUPABASE_ANON_KEY` the site builds with no supplier profiles, no blog posts, and no programmatic-SEO vendor pages. The marketing pages, pricing, and legal pages build normally.
 
-# אופציונלי — הגדר מאוחר יותר
-GA_MEASUREMENT_ID=""
-GSC_VERIFICATION_ID=""
+Example `.env`:
+
+```env
+SITE_URL=https://eventflow.co.il
+APP_URL=https://app.eventflow.co.il
+SUPABASE_URL=https://<project-ref>.supabase.co
+SUPABASE_ANON_KEY=<your-anon-key>
+GA_MEASUREMENT_ID=G-XXXXXXXXXX
+GSC_VERIFICATION_ID=<gsc-meta-content-value>
 ```
 
-**איפה מוצאים את ה-anon key?**
-1. כנס ל-[Supabase Dashboard](https://supabase.com/dashboard)
-2. בחר את הפרויקט
-3. **Settings** > **API** > העתק את **anon public** key
-
-### הרצה מקומית
+### Dev server
 
 ```bash
 npm run dev
+# → http://localhost:4321
 ```
 
-האתר ייפתח בכתובת **http://localhost:4321**
-
-> שים לב: אם Supabase לא נגיש, האתר עדיין ייבנה — פשוט בלי דפי בלוג וספקים (הם יופיעו כשה-DB יהיה פעיל)
-
----
-
-## שלב 2 — העלאה לאוויר עם Cloudflare Pages (מומלץ)
-
-### למה Cloudflare?
-
-- **CDN מתל אביב** — תוכן מוגש ישירות מישראל (~5ms latency)
-- **bandwidth ללא הגבלה** — בחינם. Vercel חוסם ב-100GB
-- **500 builds/חודש** — חשוב כי ה-webhook בונה מחדש על כל מאמר/ספק
-- **$0 לטווח ארוך** — Vercel מתחיל לגבות $20/חודש מהר
-
-### 2.1 הגדרת Cloudflare DNS (פעם אחת)
-
-> אם הדומיין כבר ב-Cloudflare, דלג לשלב 2.2.
-
-1. כנס ל-[dash.cloudflare.com](https://dash.cloudflare.com) והירשם (חינם)
-2. לחץ **Add a site** > הקלד `eventflow.co.il`
-3. בחר **Free plan**
-4. Cloudflare יסרוק DNS קיימים — אשר
-5. תקבל **2 nameservers** (כמו `aria.ns.cloudflare.com`)
-6. כנס לספק הדומיין שלך ושנה את ה-nameservers:
-   - **[nic.co.il / ISOC](https://domains.nic.co.il)** — אם רשום ישירות
-   - **[Namecheap](https://ap.www.namecheap.com)** — Domain List > Manage > Nameservers > Custom DNS
-   - **[GoDaddy](https://dcc.godaddy.com)** — DNS > Nameservers > Change
-7. חכה עד 24 שעות (בד"כ 1-2 שעות)
-
-### 2.2 פריסת האתר ב-Cloudflare Pages
-
-1. כנס ל-[dash.cloudflare.com](https://dash.cloudflare.com) > **Workers & Pages**
-2. לחץ **Create** > **Pages** > **Connect to Git**
-3. אשר גישה ל-GitHub ובחר את ה-repository **eventflow-marketing**
-4. הגדרות Build:
-   - **Project name**: `eventflow-marketing`
-   - **Production branch**: `main`
-   - **Framework preset**: Astro
-   - **Build command**: `npm run build`
-   - **Build output directory**: `dist`
-5. לחץ **Environment variables** והוסף:
-
-   | שם | ערך |
-   |----|-----|
-   | `SUPABASE_URL` | `https://ctadwezlkhwjqsdqkymu.supabase.co` |
-   | `SUPABASE_ANON_KEY` | (ה-anon key שלך) |
-   | `SITE_URL` | `https://eventflow.co.il` |
-   | `APP_URL` | `https://app.eventflow.co.il` |
-   | `NODE_VERSION` | `22` |
-
-6. לחץ **Save and Deploy**
-7. חכה ל-build (כ-1-2 דקות). תקבל כתובת זמנית כמו `eventflow-marketing.pages.dev`
-
-### 2.3 חיבור דומיין eventflow.co.il
-
-1. ב-Cloudflare Pages: לחץ על הפרויקט > **Custom domains** > **Set up a domain**
-2. הקלד `eventflow.co.il`
-3. Cloudflare מוסיף CNAME אוטומטית (כי DNS כבר אצלו)
-4. הוסף גם `www.eventflow.co.il` — הוא יפנה אוטומטית לגרסה ללא www
-5. **HTTPS מופעל אוטומטית** — אין מה לעשות
-6. תוך כמה דקות `https://eventflow.co.il` יעבוד
-
----
-
-## שלב 3 — הגדרת Google (אנליטיקס + Search Console)
-
-### 3.1 Google Analytics (מעקב תנועה)
-
-**למה צריך?** כדי לדעת כמה אנשים נכנסים לאתר, מאיפה הם מגיעים, ואיפה הם יוצאים.
-
-1. כנס ל-[analytics.google.com](https://analytics.google.com)
-2. לחץ **Admin** (גלגל שיניים) > **Create Property**
-3. מלא שם: `EventFlow` > Next
-4. בחר **Business objectives** > Next
-5. בחר **Web** > הקלד `eventflow.co.il`
-6. **העתק את ה-Measurement ID** (נראה ככה: `G-XXXXXXXXXX`)
-7. חזור ל-Cloudflare Pages > **Settings > Environment variables**
-8. הוסף: `GA_MEASUREMENT_ID` = `G-XXXXXXXXXX`
-9. ב-**Deployments** > לחץ **Retry deployment** על ה-deployment האחרון
-
-### 3.2 Google Search Console (הופעה בגוגל)
-
-**למה צריך?** כדי שגוגל יכיר את האתר, יסרוק אותו, ויציג אותו בתוצאות חיפוש.
-
-1. כנס ל-[search.google.com/search-console](https://search.google.com/search-console)
-2. לחץ **Add Property** > **URL prefix** > הקלד `https://eventflow.co.il`
-3. בחר שיטת אימות **HTML tag**
-4. **העתק רק את ה-content** מתוך ה-meta tag (הערך בין המרכאות)
-5. חזור ל-Cloudflare Pages > **Settings > Environment variables**
-6. הוסף: `GSC_VERIFICATION_ID` = (הערך שהעתקת)
-7. Retry deployment
-8. חזור ל-Google Search Console ולחץ **Verify**
-9. אחרי אימות, שלח את ה-sitemap:
-   - לחץ **Sitemaps** בתפריט השמאלי
-   - הקלד `sitemap-index.xml` > **Submit**
-
----
-
-## שלב 4 — עדכון אוטומטי (Rebuild Webhook)
-
-כל פעם שמוסיפים מאמר בבלוג או ספק חדש נרשם, צריך לבנות מחדש את האתר כדי שהתוכן יופיע. אפשר לעשות את זה אוטומטית:
-
-### 4.1 יצירת Deploy Hook ב-Cloudflare
-
-1. ב-Cloudflare Pages: בחר את הפרויקט > **Settings** > **Builds & deployments**
-2. גלול ל-**Deploy hooks** > **Add deploy hook**
-3. שם: `supabase-content-update`
-4. ענף: `main`
-5. **העתק את ה-URL** שנוצר
-
-### 4.2 חיבור ל-Supabase
-
-1. כנס ל-[Supabase Dashboard](https://supabase.com/dashboard) > **Database > Webhooks**
-2. לחץ **Create Webhook**
-3. הגדרות:
-   - **Name**: `rebuild-on-blog-update`
-   - **Table**: `blog_posts`
-   - **Events**: INSERT, UPDATE
-   - **Type**: HTTP Request
-   - **URL**: (ה-Deploy Hook URL מ-Cloudflare)
-   - **Method**: POST
-4. לחץ **Create**
-5. חזור על התהליך עבור טבלת `suppliers` (כדי שפרופילים חדשים יופיעו)
-
-עכשיו כל פעם שתפרסם מאמר חדש באפליקציה — האתר ייבנה מחדש אוטומטית תוך כ-2 דקות.
-
-> עם Cloudflare Pages יש לך 500 builds/חודש בחינם. גם אם מפרסמים 5 מאמרים ביום — זה 150/חודש, בשפע.
-
----
-
-## שלב 5 — ניהול תוכן
-
-### בלוג
-
-מאמרים נכתבים **באפליקציה** (app.eventflow.co.il) ומופיעים אוטומטית באתר.
-
-1. כנס לאפליקציה > **ניהול בלוג**
-2. לחץ **מאמר חדש**
-3. כתוב כותרת, תוכן, בחר קטגוריה
-4. לחץ **פרסם**
-5. האתר ייבנה מחדש אוטומטית (אם הגדרת Webhook)
-
-### פרופילי ספקים
-
-ספקים שנרשמים באפליקציה ומשלימים onboarding מקבלים דף פרופיל ציבורי אוטומטית.
-
-### דפי SEO
-
-דפי ה-SEO (כמו "צלם בתל אביב") נבנים אוטומטית מהנתונים. אין צורך לערוך אותם ידנית.
-
----
-
-## שלב 6 — תחזוקה
-
-### פקודות שימושיות
+### Build
 
 ```bash
-npm run dev       # שרת פיתוח (localhost:4321)
-npm run build     # בניית כל 838+ הדפים
-npm run preview   # צפייה מקומית בגרסה שנבנתה
-npm run lint      # בדיקת שגיאות קוד
-npm run format    # סידור אוטומטי של הקוד
+npm run build
+# Output in dist/ (~838 pages when Supabase is connected)
 ```
 
-### עדכון תוכן
+### Preview built output
 
-| מה לעדכן | איפה |
-|-----------|------|
-| מחירי מנויים | `src/pages/pricing.astro` |
-| שאלות נפוצות | `src/data/faqs.ts` |
-| מידע על החברה | `src/pages/about.astro` |
-| פרטיות ותנאים | `src/pages/privacy.astro`, `src/pages/terms.astro` |
-| נגישות | `src/pages/accessibility.astro` |
-| רובוטים/AI | `public/robots.txt` |
-
-### בדיקת ביצועים
-
-- [Google PageSpeed Insights](https://pagespeed.web.dev/) — הקלד `eventflow.co.il`
-- [Google Search Console](https://search.google.com/search-console) — בדוק שגיאות סריקה
-- [Ahrefs Free Tools](https://ahrefs.com/free-seo-tools) — בדיקת SEO בסיסית
+```bash
+npm run preview
+```
 
 ---
 
-## ארכיטקטורה
+## Scripts
 
-```
-eventflow.co.il (האתר הזה)         app.eventflow.co.il (האפליקציה)
-+--------------------------+        +--------------------------+
-| דף נחיתה, מחירים, חוקי  |        | דשבורד, לידים, הצעות    |
-| בלוג (מ-Supabase)       |        | עורך בלוג (admin)        |
-| פרופילי ספקים            | ←→     | חוזים, תשלומים           |
-| דפי SEO (850+ עמודים)   |        | הגדרות, גלריות           |
-| Sitemaps, RSS, robots    |        |                          |
-+--------------------------+        +--------------------------+
-         |                                   |
-         +------- Supabase (משותף) ----------+
-                        |
-              Cloudflare DNS + CDN
-              (תל אביב PoP — ~5ms)
-```
-
-שני הפרויקטים משתמשים באותו בסיס נתונים Supabase. האתר השיווקי שולף נתונים **ב-build time** (בזמן הבנייה). האפליקציה שולפת **בזמן אמת**.
+| Script | Command | What it does |
+|---|---|---|
+| `dev` | `astro dev` | Local dev server with HMR |
+| `build` | `astro build` | Static build to `dist/` |
+| `preview` | `astro preview` | Serve built `dist/` locally |
+| `astro` | `astro` | Astro CLI passthrough |
+| `lint` | `eslint src/` | Lint all source files |
+| `format` | `prettier --write src/` | Auto-format source files |
 
 ---
 
-## מבנה הפרויקט
+## Project structure
 
 ```
 src/
 ├── components/
-│   ├── blog/           # רכיבי בלוג (כרטיס, ניוזלטר, שיתוף)
-│   ├── landing/        # דף נחיתה (Hero, Features, Stats)
-│   ├── layout/         # Header, Footer, CTA, Mobile CTA
-│   ├── seo/            # SEO Head, Breadcrumbs, Schema
-│   └── suppliers/      # כרטיס ספק
+│   ├── analytics/      # CookieConsent, TrackingEvents
+│   ├── blog/           # BlogPostCard, CategoryPills, TOC, Newsletter, etc.
+│   ├── landing/        # HeroSection, FeaturesGrid, HowItWorks, PainPoints, StatsBar
+│   ├── layout/         # Header, Footer, CTABlock, MobileCta
+│   ├── pseo/           # SupplierCard, EmptyState, CityGrid, ServiceGrid, FAQSection, InternalLinks
+│   └── seo/            # SEOHead, SchemaOrg, Breadcrumbs, AnswerBlock, FreshnessSignal
 ├── data/
-│   ├── cities.ts       # רשימת 50+ ערים
-│   ├── services.ts     # 17 סוגי שירות
-│   └── faqs.ts         # שאלות נפוצות לפי שירות
-├── layouts/            # תבניות (דף, בלוג)
-├── lib/                # Supabase client, SEO schemas, blog utils
-├── pages/              # כל הדפים (Astro routing)
-│   ├── blog/           # בלוג + RSS
-│   ├── [service]/      # דפי שירות + עיר (pSEO)
-│   ├── biz/            # פרופילי ספקים
-│   └── cities/         # דפי ערים
-├── styles/             # CSS גלובלי
-└── public/             # קבצים סטטיים (icons, manifest, robots)
+│   ├── categories.ts   # Blog categories
+│   ├── cities.ts       # ~50 Israeli cities/regions
+│   ├── faqs.ts         # FAQs per service type
+│   └── services.ts     # 17 event service types with Hebrew labels and slugs
+├── layouts/
+│   ├── BaseLayout.astro # HTML shell, GA Consent Mode v2, CookieConsent
+│   ├── BlogLayout.astro
+│   └── PageLayout.astro
+├── lib/
+│   ├── blog.ts         # Blog fetch from Supabase
+│   ├── sanitize.ts     # HTML sanitisation
+│   ├── seo.ts          # JSON-LD schema factories
+│   ├── suppliers.ts    # Supplier fetch + PublicSupplier type
+│   └── supabase.ts     # Supabase client (graceful fallback when env missing)
+└── pages/
+    ├── index.astro
+    ├── pricing.astro
+    ├── about.astro
+    ├── privacy.astro
+    ├── terms.astro
+    ├── accessibility.astro
+    ├── rss.xml.ts
+    ├── biz/[slug].astro
+    ├── blog/[slug].astro
+    ├── blog/[...page].astro
+    ├── blog/category/[category].astro
+    ├── cities/[city].astro
+    └── [service]/
+        ├── index.astro
+        └── [city].astro
+
+public/
+├── llms.txt            # AI answer engine description
+├── robots.txt          # Bot directives
+├── manifest.json       # PWA manifest
+├── favicon.ico / favicon.svg
+└── icons/              # App icons
 ```
 
 ---
 
-## צ׳קליסט השקה
+## Deploy notes
 
-- [ ] DNS מועבר ל-Cloudflare
-- [ ] Cloudflare Pages deployed עם env vars
-- [ ] `eventflow.co.il` מחובר ל-Pages
-- [ ] Google Search Console — אומת + sitemap נשלח
-- [ ] Google Analytics — Measurement ID מוגדר
-- [ ] Supabase webhook — rebuild אוטומטי על blog_posts ו-suppliers
-- [ ] בדיקה ב-[PageSpeed Insights](https://pagespeed.web.dev/) — ציון מעל 90
+The build output (`dist/`) is **fully static HTML/CSS/JS** — no server runtime required. Deploy to any static hosting:
 
----
+- **Cloudflare Pages** (recommended) — Israeli CDN PoP, 500 free builds/month, unlimited bandwidth on free tier
+- Vercel, Netlify, or any CDN
 
-## שאלות נפוצות
+**Build command:** `npm run build`  
+**Output directory:** `dist`  
+**Node version:** 22
 
-**ש: למה ה-build מציג "Failed to fetch suppliers"?**
-ת: זה קורה כש-Supabase לא נגיש. האתר עדיין ייבנה — רק ללא דפי בלוג וספקים. ודא שה-Supabase project פעיל וה-anon key נכון.
+The build tolerates missing Supabase secrets — CI pipelines without `SUPABASE_URL`/`SUPABASE_ANON_KEY` will produce a valid site with only the static marketing pages. Set the secrets in your deploy platform environment to include the full vendor directory.
 
-**ש: איך מעדכנים את רשימת הערים?**
-ת: ערוך את `src/data/cities.ts` — הוסף/הסר ערים. אחרי build יווצרו דפים חדשים אוטומטית.
+### Auto-rebuild on content changes
 
-**ש: איך מוסיפים סוג שירות חדש?**
-ת: ערוך את `src/data/services.ts` ו-`src/data/faqs.ts` — הוסף שירות + שאלות נפוצות. דפי pSEO חדשים ייווצרו אוטומטית.
-
-**ש: כמה זמן לוקח build?**
-ת: בערך שנייה אחת ל-838 דפים. Astro SSG מהיר מאוד.
-
-**ש: צריך להריץ build אחרי כל שינוי?**
-ת: רק עבור שינויי קוד. שינויי תוכן מ-Supabase (בלוג, ספקים) ייבנו אוטומטית דרך ה-webhook.
-
-**ש: האתר עובד בלי JavaScript?**
-ת: כן! כל דפי התוכן הם HTML סטטי. JavaScript נטען רק עבור אינטראקציות (ניוזלטר, מנו נייד).
-
-**ש: כמה builds אני יכול לעשות בחודש?**
-ת: 500 ב-Cloudflare Pages Free. גם אם מפרסמים 5 מאמרים ביום — זה 150/חודש, בשפע.
+Set up a Supabase Database Webhook → your deploy platform's deploy hook URL, triggered on `INSERT`/`UPDATE` to `blog_posts` and `suppliers` tables. This keeps the static site current without manual redeploys.
 
 ---
 
-## רישיון
+## Architecture
 
-פרטי — כל הזכויות שמורות.
+```
+eventflow.co.il (this repo)          app.eventflow.co.il (separate project)
++---------------------------+        +---------------------------+
+| Landing, Pricing, Legal   |        | Dashboard, Leads          |
+| Blog (from Supabase)      | ←DB→   | Contracts, Payments       |
+| Supplier profiles (pSEO)  |        | Blog editor (admin)       |
+| ~838 static pages         |        |                           |
++---------------------------+        +---------------------------+
+           |                                    |
+           +---------- Supabase (shared) -------+
+                              |
+                    Cloudflare CDN (PoP: TLV)
+```
+
+This site reads Supabase **at build time only**. The app reads in real time.
+
+---
+
+## Launch checklist (external)
+
+These items cannot be completed from within this codebase and must be handled before go-live:
+
+- [ ] **Lawyer sign-off on legal pages** — `privacy.astro` and `terms.astro` are both marked "טיוטה — לאישור עו"ד". Remove the yellow draft banners only after legal approval.
+- [ ] **Real phone number in `accessibility.astro`** — Israeli standard ת"י 5568 (Amendment 36) requires a real accessibility-coordinator phone number. The placeholder was intentionally removed; add `<li>טלפון: [מספר אמיתי]</li>` under the contact section.
+- [ ] **Set `GA_MEASUREMENT_ID` in production** — and verify in GA4 that `analytics_storage` starts as `denied` and is only updated to `granted` after user acceptance. Test with GA4 DebugView.
+- [ ] **Point `SITE_URL` and `APP_URL` at production domains** — confirm `https://eventflow.co.il` and `https://app.eventflow.co.il` before final deploy.
+- [ ] **Update `public/llms.txt` prices** — current file shows pre-VAT prices (₪299/₪499/₪1,490) that differ from the VAT-inclusive pricing page (₪353/₪589/₪1,758). Either update to VAT-inclusive prices or add explicit "excluding VAT" notation.
+- [ ] **Submit sitemap to Google Search Console** — `sitemap-index.xml`
+- [ ] **Cloudflare DNS + custom domain** — connect `eventflow.co.il` to Cloudflare Pages; add `www` redirect.

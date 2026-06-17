@@ -1,5 +1,6 @@
 ---
 import type { PublicSupplier } from '../../lib/suppliers';
+import { getServiceByDbType } from '../../data/services';
 
 interface Props {
   supplier: PublicSupplier;
@@ -14,6 +15,7 @@ const descriptionTruncated = supplier.description
     ? supplier.description.slice(0, 120) + '…'
     : supplier.description
   : null;
+const serviceLabel = getServiceByDbType(supplier.business_type)?.nameHe ?? supplier.business_type;
 ---
 
 <a
@@ -42,7 +44,7 @@ const descriptionTruncated = supplier.description
       <h3 class="font-semibold text-gray-900 truncate">{supplier.business_name}</h3>
       <div class="mt-0.5 flex flex-wrap gap-1.5 items-center">
         <span class="inline-block rounded-full bg-gray-100 px-2 py-0.5 text-xs text-gray-600">
-          {supplier.business_type}
+          {serviceLabel}
         </span>
         {supplier.city && (
           <span class="text-xs text-gray-500">{supplier.city}</span>

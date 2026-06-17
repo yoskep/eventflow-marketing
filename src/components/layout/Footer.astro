@@ -55,8 +55,18 @@ const sections: FooterSection[] = [
         </div>
       ))}
     </div>
-    <div class="border-t border-white/10 mt-8 pt-8 text-center text-sm">
+    <div class="border-t border-white/10 mt-8 pt-8 text-center text-sm space-y-2">
       <p>&copy; {currentYear} EventFlow IL. כל הזכויות שמורות.</p>
+      {/* Consent withdrawal link — Amendment 13 Art. 8C: withdrawal must be as easy as granting */}
+      <p>
+        <button
+          type="button"
+          onclick="window.__efReopenConsent && window.__efReopenConsent()"
+          class="text-gray-400 hover:text-white underline transition-colors text-xs"
+        >
+          העדפות פרטיות / עוגיות
+        </button>
+      </p>
     </div>
   </div>
 </footer>

@@ -94,8 +94,30 @@ export function faqPageSchema(faqs: { question: string; answer: string }[]) {
   };
 }
 
+/** Maps service DB types to specific schema.org LocalBusiness subtypes for richer structured data. */
+const SCHEMA_TYPE_MAP: Record<string, string> = {
+  photographer: 'Photographer',
+  videographer: 'LocalBusiness',
+  venue: 'EventVenue',
+  caterer: 'FoodEstablishment',
+  planner: 'LocalBusiness',
+  florist: 'Florist',
+  musician: 'LocalBusiness',
+  entertainer: 'EntertainmentBusiness',
+  makeup: 'BeautySalon',
+  hair_stylist: 'HairSalon',
+  producer: 'LocalBusiness',
+  event_designer: 'LocalBusiness',
+  officiant: 'LocalBusiness',
+  dj: 'EntertainmentBusiness',
+  bar: 'FoodEstablishment',
+  invitations: 'LocalBusiness',
+  attractions: 'EntertainmentBusiness',
+};
+
 export function localBusinessSchema(supplier: {
   business_name: string;
+  business_type?: string | null;
   description?: string | null;
   logo_url?: string | null;
   city?: string | null;
@@ -104,9 +126,10 @@ export function localBusinessSchema(supplier: {
   avgRating?: number;
   reviewCount?: number;
 }) {
+  const schemaType = (supplier.business_type && SCHEMA_TYPE_MAP[supplier.business_type]) || 'LocalBusiness';
   const schema: Record<string, unknown> = {
     '@context': 'https://schema.org',
-    '@type': 'LocalBusiness',
+    '@type': schemaType,
     name: supplier.business_name,
     description: supplier.description || undefined,
     image: supplier.logo_url || undefined,

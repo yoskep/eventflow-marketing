@@ -8,7 +8,16 @@ import StatsBar from '@/components/landing/StatsBar.astro';
 import HowItWorks from '@/components/landing/HowItWorks.astro';
 import WhyEventFlow from '@/components/landing/WhyEventFlow.astro';
 import CTABlock from '@/components/layout/CTABlock.astro';
-import { organizationSchema, websiteSchema, softwareAppSchema } from '@/lib/seo';
+import { organizationSchema, websiteSchema, softwareAppSchema, faqPageSchema } from '@/lib/seo';
+
+const homeFaqs = [
+  { question: 'האם EventFlow עובדת עם וואטסאפ?', answer: 'כן. EventFlow שולחת תזכורות ועדכונים אוטומטיים ללקוחות ולספקים דרך וואטסאפ. אין צורך להתקין תוספים — הכל מוגדר מראש.' },
+  { question: 'האם יש חוזים דיגיטליים?', answer: 'בהחלט. בתוכנית Pro ומעלה תוכלו ליצור חוזה מקצועי עם חתימה דיגיטלית. הלקוח חותם מהנייד ואתם מקבלים אישור מיידי — בלי הדפסות ובלי סריקות.' },
+  { question: 'כמה עולה EventFlow?', answer: 'יש תוכנית חינמית (Starter) לתמיד, תוכנית Pro ב-₪353 לחודש, ו-Pro Plus ב-₪589 (כולל מע"מ). כל התוכניות ניתנות לביטול בכל עת, ללא התחייבות. לפרטים מלאים ראו את דף המחירים.' },
+  { question: 'מאיפה מתחילים?', answer: 'נרשמים בחינם, ממלאים פרטי העסק ומתחילים לנהל לידים תוך 2 דקות. אין צורך בכרטיס אשראי לתוכנית הבסיסית.' },
+  { question: 'האם EventFlow מתאימה לכל סוגי ספקי האירועים?', answer: 'כן. EventFlow בנויה לצלמים, דיג׳ייז, מאפרות, מעצבי שיער, קייטרינג, אולמות, מתכנני אירועים ועוד — כל ספק שמנהל לידים, הצעות מחיר וחוזים ייהנה מהמערכת.' },
+  { question: 'האם המידע שלי מאובטח?', answer: 'בהחלט. כל הנתונים מאוחסנים בשרתים מאובטחים ומוצפנים. EventFlow עומדת בדרישות הגנת המידע הישראליות ונותנת לכם שליטה מלאה על נתוני הלקוחות שלכם.' },
+];
 ---
 
 <PageLayout>
@@ -17,7 +26,7 @@ import { organizationSchema, websiteSchema, softwareAppSchema } from '@/lib/seo'
     title="EventFlow — ניהול עסק אירועים חכם"
     description="מערכת CRM לספקי שירותי אירועים בישראל — לידים, הצעות מחיר, חוזים דיגיטליים, תשלומים, גלריות וביקורות במערכת אחת"
     ogType="website"
-    schemas={[organizationSchema(), websiteSchema(), softwareAppSchema()]}
+    schemas={[organizationSchema(), websiteSchema(), softwareAppSchema(), faqPageSchema(homeFaqs)]}
   />
 
   <HeroSection />
@@ -26,6 +35,27 @@ import { organizationSchema, websiteSchema, softwareAppSchema } from '@/lib/seo'
   <StatsBar />
   <HowItWorks />
   <WhyEventFlow />
+
+  <!-- FAQ Section: reduces pre-CTA friction around WhatsApp, contracts, pricing, getting started -->
+  <section class="py-12 sm:py-16" dir="rtl">
+    <div class="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
+      <h2 class="text-2xl sm:text-3xl font-bold text-brand-primary mb-8">שאלות נפוצות</h2>
+      <div class="space-y-4">
+        {homeFaqs.map((faq) => (
+          <details class="group bg-white rounded-xl border border-gray-200 p-5">
+            <summary class="flex items-center justify-between cursor-pointer font-semibold text-brand-primary">
+              {faq.question}
+              <svg class="w-5 h-5 text-gray-400 transition-transform group-open:rotate-180" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M19 9l-7 7-7-7" />
+              </svg>
+            </summary>
+            <p class="mt-3 text-gray-600 leading-relaxed">{faq.answer}</p>
+          </details>
+        ))}
+      </div>
+    </div>
+  </section>
+
   <CTABlock
     title="מוכנים לנהל את העסק בצורה חכמה?"
     subtitle="הצטרפו לספקי האירועים שכבר מנהלים הכל ממקום אחד. בלי התחייבות, בלי כרטיס אשראי."

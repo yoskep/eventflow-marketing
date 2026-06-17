@@ -3,9 +3,30 @@
 ---
 
 <script>
-  function trackEvent(name, params) {
-    if (typeof gtag === 'function') {
-      gtag('event', name, params);
+  // Essential events that are always allowed (consent audit trail + auth).
+  const ESSENTIAL_EVENTS = new Set([
+    'consent_banner_shown',
+    'consent_accepted',
+    'consent_rejected',
+    'consent_customized',
+    'consent_reopened',
+    'auth_sign_in',
+  ]);
+
+  function isAnalyticsConsented(): boolean {
+    try {
+      const raw = localStorage.getItem('ef_cookie_consent_v1');
+      if (!raw) return false;
+      return (JSON.parse(raw) as { choice: string }).choice === 'accepted';
+    } catch {
+      return false;
+    }
+  }
+
+  function trackEvent(name: string, params?: Record<string, unknown>): void {
+    if (!ESSENTIAL_EVENTS.has(name) && !isAnalyticsConsented()) return;
+    if (typeof window.gtag === 'function') {
+      window.gtag('event', name, params);
     }
   }
 

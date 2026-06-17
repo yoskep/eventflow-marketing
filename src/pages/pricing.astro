@@ -9,9 +9,9 @@ const appUrl = import.meta.env.APP_URL || 'https://app.eventflow.co.il';
 
 const offers = [
   { name: 'Starter', price: '0', currency: 'ILS' },
-  { name: 'Pro', price: '299', currency: 'ILS' },
-  { name: 'Pro Plus', price: '499', currency: 'ILS' },
-  { name: 'Agency', price: '1490', currency: 'ILS' },
+  { name: 'Pro', price: '353', currency: 'ILS' },
+  { name: 'Pro Plus', price: '589', currency: 'ILS' },
+  { name: 'Agency', price: '1758', currency: 'ILS' },
 ];
 
 const siteUrl = import.meta.env.SITE_URL || 'https://eventflow.co.il';
@@ -19,7 +19,7 @@ const siteUrl = import.meta.env.SITE_URL || 'https://eventflow.co.il';
 const pricingFaqs = [
   { question: 'האם יש תקופת ניסיון חינמית?', answer: 'כן, תוכנית Starter היא חינמית לחלוטין וכוללת עד 10 לידים ו-5 הצעות מחיר. תוכלו להתנסות במערכת ללא הגבלת זמן ולשדרג כשתרצו.' },
   { question: 'האם אפשר לשנות או לבטל תוכנית?', answer: 'בהחלט. אפשר לשדרג, לשנות או לבטל תוכנית בכל רגע. שינויים נכנסים לתוקף בתחילת מחזור החיוב הבא. אין התחייבות לתקופה מינימלית.' },
-  { question: 'האם המחירים כוללים מע"מ?', answer: 'המחירים המוצגים אינם כוללים מע"מ (17%). המע"מ יתווסף בחשבונית.' },
+  { question: 'האם המחירים כוללים מע"מ?', answer: 'כן, כל המחירים המוצגים כוללים מע"מ (18%).' },
   { question: 'איזו תוכנית מתאימה לי?', answer: 'Starter מתאימה למתחילים שרוצים להתנסות. Pro מתאימה לספקי אירועים פעילים שמנהלים לידים, הצעות מחיר וחוזים. Pro Plus מתאימה לעסקים צומחים שרוצים AI ודוחות מתקדמים. Agency מיועדת לחברות הפקה עם צוות.' },
 ];
 
@@ -37,7 +37,7 @@ const plans = [
   {
     name: 'Pro',
     description: 'לספק אירועים פעיל',
-    price: '₪299',
+    price: '₪353',
     priceNote: '/חודש',
     features: ['לידים ללא הגבלה', 'הצעות מחיר ללא הגבלה', 'חוזים דיגיטליים', 'ניהול תשלומים', 'גלריות מתקדמות', 'אוטומציות', 'אנליטיקס'],
     cta: 'התחל תקופת ניסיון',
@@ -47,7 +47,7 @@ const plans = [
   {
     name: 'Pro Plus',
     description: 'לעסק צומח',
-    price: '₪499',
+    price: '₪589',
     priceNote: '/חודש',
     features: ['כל מה שב-Pro', 'טיוטות AI', 'סנכרון Google Calendar', 'דוחות מתקדמים', 'תמיכה בעדיפות'],
     cta: 'התחל תקופת ניסיון',
@@ -57,9 +57,9 @@ const plans = [
   {
     name: 'Agency',
     description: 'לחברות ומפיקי אירועים',
-    price: '₪1,490',
+    price: '₪1,758',
     priceNote: '/חודש',
-    features: ['כל מה שב-Pro Plus', 'ריבוי משתמשים', 'ניהול צוות', 'API גישה', 'מנהל חשבון ייעודי'],
+    features: ['כל מה שב-Pro Plus', 'ריבוי משתמשים', 'ניהול צוות (בקרוב)', 'API גישה (בקרוב)', 'מנהל חשבון ייעודי'],
     cta: 'צור קשר',
     href: `${appUrl}/signup?plan=agency`,
     popular: false,
@@ -156,7 +156,7 @@ const plans = [
         ))}
       </div>
 
-      <p class="text-center text-sm text-gray-400 mt-8">* לא כולל מע"מ</p>
+      <p class="text-center text-sm text-gray-400 mt-8">* כל המחירים כוללים מע"מ (18%)</p>
     </div>
   </section>
 

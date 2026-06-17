@@ -1,6 +1,7 @@
 ---
 import '@/styles/global.css';
 import TrackingEvents from '@/components/analytics/TrackingEvents.astro';
+import CookieConsent from '@/components/analytics/CookieConsent.astro';
 
 interface Props {
   class?: string;
@@ -32,13 +33,25 @@ const gscId = import.meta.env.GSC_VERIFICATION_ID;
 
     {gaId && (
       <>
-        <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} />
+        {/* Google Consent Mode v2 — default-denied for analytics before user decides.
+            The CookieConsent banner updates these grants after explicit user choice.
+            GA4 script is still loaded so Consent Mode pings/modelling can function,
+            but no analytics_storage data is written until the user accepts. */}
         <script define:vars={{ gaId }}>
           window.dataLayer = window.dataLayer || [];
           function gtag(){dataLayer.push(arguments);}
+          // Set consent defaults BEFORE the GA4 config call (required by Consent Mode v2)
+          gtag('consent', 'default', {
+            analytics_storage: 'denied',
+            ad_storage: 'denied',
+            ad_user_data: 'denied',
+            ad_personalization: 'denied',
+            wait_for_update: 500,
+          });
           gtag('js', new Date());
-          gtag('config', gaId);
+          gtag('config', gaId, { send_page_view: true });
         </script>
+        <script async src={`https://www.googletagmanager.com/gtag/js?id=${gaId}`} />
       </>
     )}
   </head>
@@ -48,5 +61,6 @@ const gscId = import.meta.env.GSC_VERIFICATION_ID;
     </a>
     <slot />
     <TrackingEvents />
+    <CookieConsent />
   </body>
 </html>
